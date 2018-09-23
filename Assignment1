@@ -1,0 +1,1956 @@
+Assignment1
+Configuring Nginx as reverse proxy and apache as backend server on Ubuntu
+1.	Installed apache
+apt-get install apache2 -y
+2.	Check apache version
+apache2 -v
+3.	Installed Nginx
+apt-get install nginx -y
+4.	Updated port for apache in ports.conf file
+Sudo vim /etc/apache2/ports.conf
+5.	edited the configuration file for virtual hosts in apache
+sudo vim /etc/apache2/sites-available/000-default.conf
+6.	Restarted apache
+Sudo service apache2 restart
+7.	added below mention proxy parameters to the proxy_param configuration file
+proxy_set_header Host $http_host;
+proxy_set_header X-Real-IP $remote_addr;
+proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+proxy_set_header X-Forwarded-Proto $scheme;
+
+client_max_body_size 100M;
+client_body_buffer_size 1m;
+proxy_intercept_errors on;
+proxy_buffering on;
+proxy_buffer_size 128k;
+proxy_buffers 256 16k;
+proxy_busy_buffers_size 256k;
+proxy_temp_file_write_size 256k;
+proxy_max_temp_file_size 0;
+proxy_read_timeout 300;
+8.	edited the virtual hosts configuration file for nginx with following lines
+server {
+    listen 80 default_server;
+    listen [::]:80 default_server;
+
+    root /var/www/html;
+
+    # Add index.php to the list if you are using PHP
+    index index.html index.htm index.nginx-debian.html;
+
+    server_name _;
+
+    location / {
+      proxy_pass http://localhost:8080;
+      include /etc/nginx/proxy_params;
+    }
+}
+9.	Restarted apache
+Sudo service apache2 restart
+10.	Restarted nginx
+Sudo service nginx restart
+11.	Added an index.html file in /var/www/html/ with following line
+"Hi, I am the Devops Ninja"
+12.	Tested the configuration
+ 
+
+
+
+Install and configure 'ntp' - with singapore time zone
+
+root@mgmt:/home/vagrant# sudo apt-get install ntp -y
+Reading package lists... Done
+Building dependency tree
+Reading state information... Done
+The following extra packages will be installed:
+  libopts25
+Suggested packages:
+  ntp-doc
+The following NEW packages will be installed:
+  libopts25 ntp
+0 upgraded, 2 newly installed, 0 to remove and 203 not upgraded.
+Need to get 477 kB of archives.
+After this operation, 1,683 kB of additional disk space will be used.
+Get:1 http://archive.ubuntu.com/ubuntu/ trusty/main libopts25 amd64 1:5.18-2ubun                                                                                        tu2 [55.3 kB]
+Get:2 http://archive.ubuntu.com/ubuntu/ trusty-updates/main ntp amd64 1:4.2.6.p5                                                                                        +dfsg-3ubuntu2.14.04.13 [422 kB]
+Fetched 477 kB in 1s (276 kB/s)
+Selecting previously unselected package libopts25:amd64.
+(Reading database ... 67281 files and directories currently installed.)
+Preparing to unpack .../libopts25_1%3a5.18-2ubuntu2_amd64.deb ...
+Unpacking libopts25:amd64 (1:5.18-2ubuntu2) ...
+Selecting previously unselected package ntp.
+Preparing to unpack .../ntp_1%3a4.2.6.p5+dfsg-3ubuntu2.14.04.13_amd64.deb ...
+Unpacking ntp (1:4.2.6.p5+dfsg-3ubuntu2.14.04.13) ...
+Processing triggers for man-db (2.6.7.1-1ubuntu1) ...
+Processing triggers for ureadahead (0.100.0-16) ...
+Setting up libopts25:amd64 (1:5.18-2ubuntu2) ...
+Setting up ntp (1:4.2.6.p5+dfsg-3ubuntu2.14.04.13) ...
+ * Starting NTP server ntpd                                              [ OK ]
+Processing triggers for libc-bin (2.19-0ubuntu6.11) ...
+Processing triggers for ureadahead (0.100.0-16) ...
+root@mgmt:/home/vagrant# service ntpd start
+ntpd: unrecognized service
+root@mgmt:/home/vagrant# service ntp start
+ * Starting NTP server ntpd                                              [ OK ]
+root@mgmt:/home/vagrant# mv /etc/localtime /etc/localtime.bak
+root@mgmt:/home/vagrant# time
+
+real    0m0.000s
+user    0m0.000s
+sys     0m0.000s
+root@mgmt:/home/vagrant# hwclock
+Thu 20 Sep 2018 02:18:04 PM UTC  -0.296840 seconds
+root@mgmt:/home/vagrant# ln -s /usr/share/zoneinfo/Asia/Singapore /etc/localtime                                                                                        root@mgmt:/home/vagrant# date
+Thu Sep 20 22:18:54 SGT 2018S
+
+
+Installing Aapache tomcat8
+root@mgmt:/home/vagrant# sudo apt-get update
+Hit http://ppa.launchpad.net trusty InRelease
+Ign http://archive.ubuntu.com trusty InRelease
+Hit http://security.ubuntu.com trusty-security InRelease
+Hit http://archive.ubuntu.com trusty-updates InRelease
+Hit http://security.ubuntu.com trusty-security/main Sources
+Hit http://ppa.launchpad.net trusty/main amd64 Packages
+Hit http://archive.ubuntu.com trusty-backports InRelease
+Hit http://security.ubuntu.com trusty-security/universe Sources
+Hit http://archive.ubuntu.com trusty Release.gpg
+Hit http://ppa.launchpad.net trusty/main Translation-en
+Hit http://archive.ubuntu.com trusty-updates/main Sources
+Hit http://security.ubuntu.com trusty-security/main amd64 Packages
+Hit http://archive.ubuntu.com trusty-updates/restricted Sources
+Hit http://security.ubuntu.com trusty-security/universe amd64 Packages
+Hit http://archive.ubuntu.com trusty-updates/universe Sources
+Hit http://archive.ubuntu.com trusty-updates/multiverse Sources
+Hit http://security.ubuntu.com trusty-security/main Translation-en
+Hit http://archive.ubuntu.com trusty-updates/main amd64 Packages
+Hit http://security.ubuntu.com trusty-security/universe Translation-en
+Hit http://archive.ubuntu.com trusty-updates/restricted amd64 Packages
+Hit http://archive.ubuntu.com trusty-updates/universe amd64 Packages
+Hit http://archive.ubuntu.com trusty-updates/multiverse amd64 Packages
+Hit http://archive.ubuntu.com trusty-updates/main Translation-en
+Hit http://archive.ubuntu.com trusty-updates/multiverse Translation-en
+Hit http://archive.ubuntu.com trusty-updates/restricted Translation-en
+Hit http://archive.ubuntu.com trusty-updates/universe Translation-en
+Hit http://archive.ubuntu.com trusty-backports/main Sources
+Hit http://archive.ubuntu.com trusty-backports/restricted Sources
+Hit http://archive.ubuntu.com trusty-backports/universe Sources
+Hit http://archive.ubuntu.com trusty-backports/multiverse Sources
+Hit http://archive.ubuntu.com trusty-backports/main amd64 Packages
+Hit http://archive.ubuntu.com trusty-backports/restricted amd64 Packages
+Hit http://archive.ubuntu.com trusty-backports/universe amd64 Packages
+Hit http://archive.ubuntu.com trusty-backports/multiverse amd64 Packages
+Hit http://archive.ubuntu.com trusty-backports/main Translation-en
+Hit http://archive.ubuntu.com trusty-backports/multiverse Translation-en
+Hit http://archive.ubuntu.com trusty-backports/restricted Translation-en
+Hit http://archive.ubuntu.com trusty-backports/universe Translation-en
+Hit http://archive.ubuntu.com trusty Release
+Hit http://archive.ubuntu.com trusty/main Sources
+Hit http://archive.ubuntu.com trusty/restricted Sources
+Hit http://archive.ubuntu.com trusty/universe Sources
+Hit http://archive.ubuntu.com trusty/multiverse Sources
+Hit http://archive.ubuntu.com trusty/main amd64 Packages
+Hit http://archive.ubuntu.com trusty/restricted amd64 Packages
+Hit http://archive.ubuntu.com trusty/universe amd64 Packages
+Hit http://archive.ubuntu.com trusty/multiverse amd64 Packages
+Hit http://archive.ubuntu.com trusty/main Translation-en
+Hit http://archive.ubuntu.com trusty/multiverse Translation-en
+Hit http://archive.ubuntu.com trusty/restricted Translation-en
+Hit http://archive.ubuntu.com trusty/universe Translation-en
+Ign http://archive.ubuntu.com trusty/main Translation-en_US
+Ign http://archive.ubuntu.com trusty/multiverse Translation-en_US
+Ign http://archive.ubuntu.com trusty/restricted Translation-en_US
+Ign http://archive.ubuntu.com trusty/universe Translation-en_US
+Reading package lists... Donsudo apt-get install default-jdk
+Reading package lists... Done
+Building dependency tree
+Reading state information... Done
+The following extra packages will be installed:
+  ca-certificates-java default-jre default-jre-headless fonts-dejavu-extra
+  java-common libasyncns0 libatk-wrapper-java libatk-wrapper-java-jni libflac8
+  libgif4 libgtk2.0-0 libgtk2.0-bin libgtk2.0-common libice-dev libnspr4
+  libnss3 libnss3-nssdb libpcsclite1 libpthread-stubs0-dev libpulse0 libsctp1
+  libsm-dev libsndfile1 libvorbis0a libvorbisenc2 libvorbisfile3 libx11-6
+  libx11-dev libx11-doc libxau-dev libxcb1-dev libxdmcp-dev libxt-dev
+  lksctp-tools openjdk-7-jdk openjdk-7-jre openjdk-7-jre-headless tzdata
+  tzdata-java x11proto-core-dev x11proto-input-dev x11proto-kb-dev
+  xorg-sgml-doctools xtrans-dev
+Suggested packages:
+  equivs librsvg2-common gvfs libice-doc pcscd pulseaudio libsm-doc libxcb-doc
+  libxt-doc openjdk-7-demo openjdk-7-source visualvm icedtea-7-plugin
+  icedtea-7-jre-jamvm libnss-mdns sun-java6-fonts fonts-ipafont-gothic
+  fonts-ipafont-mincho fonts-wqy-microhei fonts-wqy-zenhei ttf-indic-fonts
+The following NEW packages will be installed:
+  ca-certificates-java default-jdk default-jre default-jre-headless
+  fonts-dejavu-extra java-common libasyncns0 libatk-wrapper-java
+  libatk-wrapper-java-jni libflac8 libgif4 libgtk2.0-0 libgtk2.0-bin
+  libgtk2.0-common libice-dev libnspr4 libnss3 libnss3-nssdb libpcsclite1
+  libpthread-stubs0-dev libpulse0 libsctp1 libsm-dev libsndfile1 libvorbisenc2
+  libx11-dev libx11-doc libxau-dev libxcb1-dev libxdmcp-dev libxt-dev
+  lksctp-tools openjdk-7-jdk openjdk-7-jre openjdk-7-jre-headless tzdata-java
+  x11proto-core-dev x11proto-input-dev x11proto-kb-dev xorg-sgml-doctools
+  xtrans-dev
+The following packages will be upgraded:
+  libvorbis0a libvorbisfile3 libx11-6 tzdata
+4 upgraded, 41 newly installed, 0 to remove and 199 not upgraded.
+Need to get 66.2 MB of archives.
+After this operation, 120 MB of additional disk space will be used.
+Do you want to continue? [Y/n] Y
+Get:1 http://archive.ubuntu.com/ubuntu/ trusty-updates/main libx11-6 amd64 2:1.6.2-1ubuntu2.1 [561 kB]
+Get:2 http://archive.ubuntu.com/ubuntu/ trusty/main libasyncns0 amd64 0.8-4ubuntu2 [11.9 kB]
+Get:3 http://archive.ubuntu.com/ubuntu/ trusty-updates/main libgtk2.0-common all 2.24.23-0ubuntu1.4 [121 kB]
+Get:4 http://archive.ubuntu.com/ubuntu/ trusty-updates/main libgtk2.0-0 amd64 2.24.23-0ubuntu1.4 [1,739 kB]
+Get:5 http://archive.ubuntu.com/ubuntu/ trusty-updates/main libnspr4 amd64 2:4.13.1-0ubuntu0.14.04.1 [110 kB]
+Get:6 http://archive.ubuntu.com/ubuntu/ trusty-updates/main libnss3-nssdb all 2:3.28.4-0ubuntu0.14.04.3 [10.6 kB]
+Get:7 http://archive.ubuntu.com/ubuntu/ trusty-updates/main libnss3 amd64 2:3.28.4-0ubuntu0.14.04.3 [1,121 kB]
+Get:8 http://archive.ubuntu.com/ubuntu/ trusty/main ca-certificates-java all 20130815ubuntu1 [13.4 kB]
+Get:9 http://archive.ubuntu.com/ubuntu/ trusty-updates/main tzdata all 2017c-0ubuntu0.14.04 [166 kB]
+Get:10 http://archive.ubuntu.com/ubuntu/ trusty-updates/main tzdata-java all 2017c-0ubuntu0.14.04 [70.1 kB]
+Get:11 http://archive.ubuntu.com/ubuntu/ trusty/main java-common all 0.51 [130 kB]
+Get:12 http://archive.ubuntu.com/ubuntu/ trusty-updates/main libpcsclite1 amd64 1.8.10-1ubuntu1.1 [21.1 kB]
+Get:13 http://archive.ubuntu.com/ubuntu/ trusty-updates/main libflac8 amd64 1.3.0-2ubuntu0.14.04.1 [80.2 kB]
+Get:14 http://archive.ubuntu.com/ubuntu/ trusty-updates/main libvorbisfile3 amd64 1.3.2-1.3ubuntu1.2 [15.8 kB]
+Get:15 http://archive.ubuntu.com/ubuntu/ trusty-updates/main libvorbis0a amd64 1.3.2-1.3ubuntu1.2 [87.2 kB]
+Get:16 http://archive.ubuntu.com/ubuntu/ trusty-updates/main libvorbisenc2 amd64 1.3.2-1.3ubuntu1.2 [84.6 kB]
+Get:17 http://archive.ubuntu.com/ubuntu/ trusty-updates/main libsndfile1 amd64 1.0.25-7ubuntu2.2 [136 kB]
+Get:18 http://archive.ubuntu.com/ubuntu/ trusty-updates/main libpulse0 amd64 1:4.0-0ubuntu11.1 [225 kB]
+Get:19 http://archive.ubuntu.com/ubuntu/ trusty/main libsctp1 amd64 1.0.15+dfsg-1 [9,226 B]
+Get:20 http://archive.ubuntu.com/ubuntu/ trusty-updates/main openjdk-7-jre-headless amd64 7u181-2.6.14-0ubuntu0.2 [39.5 MB]
+Get:21 http://archive.ubuntu.com/ubuntu/ trusty/main default-jre-headless amd64 2:1.7-51 [3,834 B]
+Get:22 http://archive.ubuntu.com/ubuntu/ trusty/main libgif4 amd64 4.1.6-11 [28.6 kB]
+Get:23 http://archive.ubuntu.com/ubuntu/ trusty-updates/main openjdk-7-jre amd64 7u181-2.6.14-0ubuntu0.2 [172 kB]
+Get:24 http://archive.ubuntu.com/ubuntu/ trusty/main default-jre amd64 2:1.7-51 [940 B]
+Get:25 http://archive.ubuntu.com/ubuntu/ trusty/main libatk-wrapper-java all 0.30.4-4 [30.2 kB]
+Get:26 http://archive.ubuntu.com/ubuntu/ trusty/main libatk-wrapper-java-jni amd64 0.30.4-4 [25.2 kB]
+Get:27 http://archive.ubuntu.com/ubuntu/ trusty-updates/main openjdk-7-jdk amd64 7u181-2.6.14-0ubuntu0.2 [16.0 MB]
+Get:28 http://archive.ubuntu.com/ubuntu/ trusty/main default-jdk amd64 2:1.7-51 [934 B]
+Get:29 http://archive.ubuntu.com/ubuntu/ trusty/main fonts-dejavu-extra all 2.34-1ubuntu1 [1,736 kB]
+Get:30 http://archive.ubuntu.com/ubuntu/ trusty-updates/main libgtk2.0-bin amd64 2.24.23-0ubuntu1.4 [9,774 B]
+Get:31 http://archive.ubuntu.com/ubuntu/ trusty/main xorg-sgml-doctools all 1:1.11-1 [12.9 kB]
+Err http://archive.ubuntu.com/ubuntu/ trusty-updates/main x11proto-core-dev all 7.0.26-1~ubuntu2
+  502  Server Hangup [IP: 91.189.88.162 80]
+Get:32 http://archive.ubuntu.com/ubuntu/ trusty/main libice-dev amd64 2:1.0.8-2 [57.6 kB]
+Get:33 http://archive.ubuntu.com/ubuntu/ trusty/main libpthread-stubs0-dev amd64 0.3-4 [4,068 B]
+Get:34 http://archive.ubuntu.com/ubuntu/ trusty/main libsm-dev amd64 2:1.2.1-2 [19.9 kB]
+Get:35 http://archive.ubuntu.com/ubuntu/ trusty/main libxau-dev amd64 1:1.0.8-1 [11.1 kB]
+Get:36 http://archive.ubuntu.com/ubuntu/ trusty/main libxdmcp-dev amd64 1:1.1.1-1 [26.9 kB]
+Get:37 http://archive.ubuntu.com/ubuntu/ trusty/main x11proto-input-dev all 2.3-1 [139 kB]
+Get:38 http://security.ubuntu.com/ubuntu/ trusty-security/main x11proto-core-dev all 7.0.26-1~ubuntu2 [700 kB]
+Get:39 http://archive.ubuntu.com/ubuntu/ trusty/main x11proto-kb-dev all 1.0.6-2 [269 kB]
+Get:40 http://archive.ubuntu.com/ubuntu/ trusty-updates/main xtrans-dev all 1.3.5-1~ubuntu14.04.2 [70.7 kB]
+Get:41 http://archive.ubuntu.com/ubuntu/ trusty/main libxcb1-dev amd64 1.10-2ubuntu1 [76.6 kB]
+Get:42 http://archive.ubuntu.com/ubuntu/ trusty-updates/main libx11-dev amd64 2:1.6.2-1ubuntu2.1 [632 kB]
+Get:43 http://archive.ubuntu.com/ubuntu/ trusty-updates/main libx11-doc all 2:1.6.2-1ubuntu2.1 [1,447 kB]
+Get:44 http://archive.ubuntu.com/ubuntu/ trusty/main libxt-dev amd64 1:1.1.4-1 [455 kB]
+Get:45 http://archive.ubuntu.com/ubuntu/ trusty/main lksctp-tools amd64 1.0.15+dfsg-1 [51.3 kB]
+Fetched 66.2 MB in 2min 56s (375 kB/s)
+Extracting templates from packages: 100%
+Preconfiguring packages ...
+(Reading database ... 66578 files and directories currently installed.)
+Preparing to unpack .../libx11-6_2%3a1.6.2-1ubuntu2.1_amd64.deb ...
+Unpacking libx11-6:amd64 (2:1.6.2-1ubuntu2.1) over (2:1.6.2-1ubuntu2) ...
+Selecting previously unselected package libasyncns0:amd64.
+Preparing to unpack .../libasyncns0_0.8-4ubuntu2_amd64.deb ...
+Unpacking libasyncns0:amd64 (0.8-4ubuntu2) ...
+Selecting previously unselected package libgtk2.0-common.
+Preparing to unpack .../libgtk2.0-common_2.24.23-0ubuntu1.4_all.deb ...
+Unpacking libgtk2.0-common (2.24.23-0ubuntu1.4) ...
+Selecting previously unselected package libgtk2.0-0:amd64.
+Preparing to unpack .../libgtk2.0-0_2.24.23-0ubuntu1.4_amd64.deb ...
+Unpacking libgtk2.0-0:amd64 (2.24.23-0ubuntu1.4) ...
+Selecting previously unselected package libnspr4:amd64.
+Preparing to unpack .../libnspr4_2%3a4.13.1-0ubuntu0.14.04.1_amd64.deb ...
+Unpacking libnspr4:amd64 (2:4.13.1-0ubuntu0.14.04.1) ...
+Selecting previously unselected package libnss3-nssdb.
+Preparing to unpack .../libnss3-nssdb_2%3a3.28.4-0ubuntu0.14.04.3_all.deb ...
+Unpacking libnss3-nssdb (2:3.28.4-0ubuntu0.14.04.3) ...
+Selecting previously unselected package libnss3:amd64.
+Preparing to unpack .../libnss3_2%3a3.28.4-0ubuntu0.14.04.3_amd64.deb ...
+Unpacking libnss3:amd64 (2:3.28.4-0ubuntu0.14.04.3) ...
+Selecting previously unselected package ca-certificates-java.
+Preparing to unpack .../ca-certificates-java_20130815ubuntu1_all.deb ...
+Unpacking ca-certificates-java (20130815ubuntu1) ...
+Preparing to unpack .../tzdata_2017c-0ubuntu0.14.04_all.deb ...
+Unpacking tzdata (2017c-0ubuntu0.14.04) over (2016j-0ubuntu0.14.04) ...
+Processing triggers for ca-certificates (20160104ubuntu0.14.04.1) ...
+Updating certificates in /etc/ssl/certs... 0 added, 0 removed; done.
+Running hooks in /etc/ca-certificates/update.d....done.
+Setting up tzdata (2017c-0ubuntu0.14.04) ...
+
+Current default time zone: 'Etc/UTC'
+Local time is now:      Sun Sep 23 18:11:00 UTC 2018.
+Universal Time is now:  Sun Sep 23 18:11:00 UTC 2018.
+Run 'dpkg-reconfigure tzdata' if you wish to change it.
+
+Selecting previously unselected package tzdata-java.
+(Reading database ... 66678 files and directories currently installed.)
+Preparing to unpack .../tzdata-java_2017c-0ubuntu0.14.04_all.deb ...
+Unpacking tzdata-java (2017c-0ubuntu0.14.04) ...
+Selecting previously unselected package java-common.
+Preparing to unpack .../java-common_0.51_all.deb ...
+Unpacking java-common (0.51) ...
+Selecting previously unselected package libpcsclite1:amd64.
+Preparing to unpack .../libpcsclite1_1.8.10-1ubuntu1.1_amd64.deb ...
+Unpacking libpcsclite1:amd64 (1.8.10-1ubuntu1.1) ...
+Selecting previously unselected package libflac8:amd64.
+Preparing to unpack .../libflac8_1.3.0-2ubuntu0.14.04.1_amd64.deb ...
+Unpacking libflac8:amd64 (1.3.0-2ubuntu0.14.04.1) ...
+Preparing to unpack .../libvorbisfile3_1.3.2-1.3ubuntu1.2_amd64.deb ...
+Unpacking libvorbisfile3:amd64 (1.3.2-1.3ubuntu1.2) over (1.3.2-1.3ubuntu1) ...
+Preparing to unpack .../libvorbis0a_1.3.2-1.3ubuntu1.2_amd64.deb ...
+Unpacking libvorbis0a:amd64 (1.3.2-1.3ubuntu1.2) over (1.3.2-1.3ubuntu1) ...
+Selecting previously unselected package libvorbisenc2:amd64.
+Preparing to unpack .../libvorbisenc2_1.3.2-1.3ubuntu1.2_amd64.deb ...
+Unpacking libvorbisenc2:amd64 (1.3.2-1.3ubuntu1.2) ...
+Selecting previously unselected package libsndfile1:amd64.
+Preparing to unpack .../libsndfile1_1.0.25-7ubuntu2.2_amd64.deb ...
+Unpacking libsndfile1:amd64 (1.0.25-7ubuntu2.2) ...
+Selecting previously unselected package libpulse0:amd64.
+Preparing to unpack .../libpulse0_1%3a4.0-0ubuntu11.1_amd64.deb ...
+Unpacking libpulse0:amd64 (1:4.0-0ubuntu11.1) ...
+Selecting previously unselected package libsctp1:amd64.
+Preparing to unpack .../libsctp1_1.0.15+dfsg-1_amd64.deb ...
+Unpacking libsctp1:amd64 (1.0.15+dfsg-1) ...
+Selecting previously unselected package openjdk-7-jre-headless:amd64.
+Preparing to unpack .../openjdk-7-jre-headless_7u181-2.6.14-0ubuntu0.2_amd64.deb ...
+Unpacking openjdk-7-jre-headless:amd64 (7u181-2.6.14-0ubuntu0.2) ...
+Selecting previously unselected package default-jre-headless.
+Preparing to unpack .../default-jre-headless_2%3a1.7-51_amd64.deb ...
+Unpacking default-jre-headless (2:1.7-51) ...
+Selecting previously unselected package libgif4:amd64.
+Preparing to unpack .../libgif4_4.1.6-11_amd64.deb ...
+Unpacking libgif4:amd64 (4.1.6-11) ...
+Selecting previously unselected package openjdk-7-jre:amd64.
+Preparing to unpack .../openjdk-7-jre_7u181-2.6.14-0ubuntu0.2_amd64.deb ...
+Unpacking openjdk-7-jre:amd64 (7u181-2.6.14-0ubuntu0.2) ...
+Selecting previously unselected package default-jre.
+Preparing to unpack .../default-jre_2%3a1.7-51_amd64.deb ...
+Unpacking default-jre (2:1.7-51) ...
+Selecting previously unselected package libatk-wrapper-java.
+Preparing to unpack .../libatk-wrapper-java_0.30.4-4_all.deb ...
+Unpacking libatk-wrapper-java (0.30.4-4) ...
+Selecting previously unselected package libatk-wrapper-java-jni:amd64.
+Preparing to unpack .../libatk-wrapper-java-jni_0.30.4-4_amd64.deb ...
+Unpacking libatk-wrapper-java-jni:amd64 (0.30.4-4) ...
+Selecting previously unselected package openjdk-7-jdk:amd64.
+Preparing to unpack .../openjdk-7-jdk_7u181-2.6.14-0ubuntu0.2_amd64.deb ...
+Unpacking openjdk-7-jdk:amd64 (7u181-2.6.14-0ubuntu0.2) ...
+Selecting previously unselected package default-jdk.
+Preparing to unpack .../default-jdk_2%3a1.7-51_amd64.deb ...
+Unpacking default-jdk (2:1.7-51) ...
+Selecting previously unselected package fonts-dejavu-extra.
+Preparing to unpack .../fonts-dejavu-extra_2.34-1ubuntu1_all.deb ...
+Unpacking fonts-dejavu-extra (2.34-1ubuntu1) ...
+Selecting previously unselected package libgtk2.0-bin.
+Preparing to unpack .../libgtk2.0-bin_2.24.23-0ubuntu1.4_amd64.deb ...
+Unpacking libgtk2.0-bin (2.24.23-0ubuntu1.4) ...
+Selecting previously unselected package xorg-sgml-doctools.
+Preparing to unpack .../xorg-sgml-doctools_1%3a1.11-1_all.deb ...
+Unpacking xorg-sgml-doctools (1:1.11-1) ...
+Selecting previously unselected package x11proto-core-dev.
+Preparing to unpack .../x11proto-core-dev_7.0.26-1~ubuntu2_all.deb ...
+Unpacking x11proto-core-dev (7.0.26-1~ubuntu2) ...
+Selecting previously unselected package libice-dev:amd64.
+Preparing to unpack .../libice-dev_2%3a1.0.8-2_amd64.deb ...
+Unpacking libice-dev:amd64 (2:1.0.8-2) ...
+Selecting previously unselected package libpthread-stubs0-dev:amd64.
+Preparing to unpack .../libpthread-stubs0-dev_0.3-4_amd64.deb ...
+Unpacking libpthread-stubs0-dev:amd64 (0.3-4) ...
+Selecting previously unselected package libsm-dev:amd64.
+Preparing to unpack .../libsm-dev_2%3a1.2.1-2_amd64.deb ...
+Unpacking libsm-dev:amd64 (2:1.2.1-2) ...
+Selecting previously unselected package libxau-dev:amd64.
+Preparing to unpack .../libxau-dev_1%3a1.0.8-1_amd64.deb ...
+Unpacking libxau-dev:amd64 (1:1.0.8-1) ...
+Selecting previously unselected package libxdmcp-dev:amd64.
+Preparing to unpack .../libxdmcp-dev_1%3a1.1.1-1_amd64.deb ...
+Unpacking libxdmcp-dev:amd64 (1:1.1.1-1) ...
+Selecting previously unselected package x11proto-input-dev.
+Preparing to unpack .../x11proto-input-dev_2.3-1_all.deb ...
+Unpacking x11proto-input-dev (2.3-1) ...
+Selecting previously unselected package x11proto-kb-dev.
+Preparing to unpack .../x11proto-kb-dev_1.0.6-2_all.deb ...
+Unpacking x11proto-kb-dev (1.0.6-2) ...
+Selecting previously unselected package xtrans-dev.
+Preparing to unpack .../xtrans-dev_1.3.5-1~ubuntu14.04.2_all.deb ...
+Unpacking xtrans-dev (1.3.5-1~ubuntu14.04.2) ...
+Selecting previously unselected package libxcb1-dev:amd64.
+Preparing to unpack .../libxcb1-dev_1.10-2ubuntu1_amd64.deb ...
+Unpacking libxcb1-dev:amd64 (1.10-2ubuntu1) ...
+Selecting previously unselected package libx11-dev:amd64.
+Preparing to unpack .../libx11-dev_2%3a1.6.2-1ubuntu2.1_amd64.deb ...
+Unpacking libx11-dev:amd64 (2:1.6.2-1ubuntu2.1) ...
+Selecting previously unselected package libx11-doc.
+Preparing to unpack .../libx11-doc_2%3a1.6.2-1ubuntu2.1_all.deb ...
+Unpacking libx11-doc (2:1.6.2-1ubuntu2.1) ...
+Selecting previously unselected package libxt-dev:amd64.
+Preparing to unpack .../libxt-dev_1%3a1.1.4-1_amd64.deb ...
+Unpacking libxt-dev:amd64 (1:1.1.4-1) ...
+Selecting previously unselected package lksctp-tools.
+Preparing to unpack .../lksctp-tools_1.0.15+dfsg-1_amd64.deb ...
+Unpacking lksctp-tools (1.0.15+dfsg-1) ...
+Processing triggers for man-db (2.6.7.1-1ubuntu1) ...
+Processing triggers for hicolor-icon-theme (0.13-1) ...
+Processing triggers for mime-support (3.54ubuntu1.1) ...
+Processing triggers for fontconfig (2.11.0-0ubuntu4.2) ...
+Setting up libx11-6:amd64 (2:1.6.2-1ubuntu2.1) ...
+Setting up libasyncns0:amd64 (0.8-4ubuntu2) ...
+Setting up libgtk2.0-common (2.24.23-0ubuntu1.4) ...
+Setting up libgtk2.0-0:amd64 (2.24.23-0ubuntu1.4) ...
+Setting up libnspr4:amd64 (2:4.13.1-0ubuntu0.14.04.1) ...
+Setting up tzdata-java (2017c-0ubuntu0.14.04) ...
+Setting up java-common (0.51) ...
+Setting up libpcsclite1:amd64 (1.8.10-1ubuntu1.1) ...
+Setting up libflac8:amd64 (1.3.0-2ubuntu0.14.04.1) ...
+Setting up libvorbis0a:amd64 (1.3.2-1.3ubuntu1.2) ...
+Setting up libvorbisenc2:amd64 (1.3.2-1.3ubuntu1.2) ...
+Setting up libsndfile1:amd64 (1.0.25-7ubuntu2.2) ...
+Setting up libpulse0:amd64 (1:4.0-0ubuntu11.1) ...
+Setting up libsctp1:amd64 (1.0.15+dfsg-1) ...
+Setting up libvorbisfile3:amd64 (1.3.2-1.3ubuntu1.2) ...
+Setting up libgif4:amd64 (4.1.6-11) ...
+Setting up fonts-dejavu-extra (2.34-1ubuntu1) ...
+Setting up libgtk2.0-bin (2.24.23-0ubuntu1.4) ...
+Setting up xorg-sgml-doctools (1:1.11-1) ...
+Setting up x11proto-core-dev (7.0.26-1~ubuntu2) ...
+Setting up libice-dev:amd64 (2:1.0.8-2) ...
+Setting up libpthread-stubs0-dev:amd64 (0.3-4) ...
+Setting up libsm-dev:amd64 (2:1.2.1-2) ...
+Setting up libxau-dev:amd64 (1:1.0.8-1) ...
+Setting up libxdmcp-dev:amd64 (1:1.1.1-1) ...
+Setting up x11proto-input-dev (2.3-1) ...
+Setting up x11proto-kb-dev (1.0.6-2) ...
+Setting up xtrans-dev (1.3.5-1~ubuntu14.04.2) ...
+Setting up libxcb1-dev:amd64 (1.10-2ubuntu1) ...
+Setting up libx11-dev:amd64 (2:1.6.2-1ubuntu2.1) ...
+Setting up libx11-doc (2:1.6.2-1ubuntu2.1) ...
+Setting up libxt-dev:amd64 (1:1.1.4-1) ...
+Setting up lksctp-tools (1.0.15+dfsg-1) ...
+Setting up libnss3-nssdb (2:3.28.4-0ubuntu0.14.04.3) ...
+Setting up libnss3:amd64 (2:3.28.4-0ubuntu0.14.04.3) ...
+Setting up openjdk-7-jre-headless:amd64 (7u181-2.6.14-0ubuntu0.2) ...
+update-alternatives: using /usr/lib/jvm/java-7-openjdk-amd64/jre/bin/java to provide /usr/bin/java (java) in auto mode
+update-alternatives: using /usr/lib/jvm/java-7-openjdk-amd64/jre/bin/keytool to provide /usr/bin/keytool (keytool) in auto mode
+update-alternatives: using /usr/lib/jvm/java-7-openjdk-amd64/jre/bin/pack200 to provide /usr/bin/pack200 (pack200) in auto mode
+update-alternatives: using /usr/lib/jvm/java-7-openjdk-amd64/jre/bin/rmid to provide /usr/bin/rmid (rmid) in auto mode
+update-alternatives: using /usr/lib/jvm/java-7-openjdk-amd64/jre/bin/rmiregistry to provide /usr/bin/rmiregistry (rmiregistry) in auto mode
+update-alternatives: using /usr/lib/jvm/java-7-openjdk-amd64/jre/bin/unpack200 to provide /usr/bin/unpack200 (unpack200) in auto mode
+update-alternatives: using /usr/lib/jvm/java-7-openjdk-amd64/jre/bin/orbd to provide /usr/bin/orbd (orbd) in auto mode
+update-alternatives: using /usr/lib/jvm/java-7-openjdk-amd64/jre/bin/servertool to provide /usr/bin/servertool (servertool) in auto mode
+update-alternatives: using /usr/lib/jvm/java-7-openjdk-amd64/jre/bin/tnameserv to provide /usr/bin/tnameserv (tnameserv) in auto mode
+update-alternatives: using /usr/lib/jvm/java-7-openjdk-amd64/jre/lib/jexec to provide /usr/bin/jexec (jexec) in auto mode
+Setting up default-jre-headless (2:1.7-51) ...
+Setting up openjdk-7-jre:amd64 (7u181-2.6.14-0ubuntu0.2) ...
+update-alternatives: using /usr/lib/jvm/java-7-openjdk-amd64/jre/bin/policytool to provide /usr/bin/policytool (policytool) in auto mode
+Setting up default-jre (2:1.7-51) ...
+Setting up openjdk-7-jdk:amd64 (7u181-2.6.14-0ubuntu0.2) ...
+update-alternatives: using /usr/lib/jvm/java-7-openjdk-amd64/bin/appletviewer to provide /usr/bin/appletviewer (appletviewer) in auto mode
+update-alternatives: using /usr/lib/jvm/java-7-openjdk-amd64/bin/extcheck to provide /usr/bin/extcheck (extcheck) in auto mode
+update-alternatives: using /usr/lib/jvm/java-7-openjdk-amd64/bin/idlj to provide /usr/bin/idlj (idlj) in auto mode
+update-alternatives: using /usr/lib/jvm/java-7-openjdk-amd64/bin/jar to provide /usr/bin/jar (jar) in auto mode
+update-alternatives: using /usr/lib/jvm/java-7-openjdk-amd64/bin/jarsigner to provide /usr/bin/jarsigner (jarsigner) in auto mode
+update-alternatives: using /usr/lib/jvm/java-7-openjdk-amd64/bin/javac to provide /usr/bin/javac (javac) in auto mode
+update-alternatives: using /usr/lib/jvm/java-7-openjdk-amd64/bin/javadoc to provide /usr/bin/javadoc (javadoc) in auto mode
+update-alternatives: using /usr/lib/jvm/java-7-openjdk-amd64/bin/javah to provide /usr/bin/javah (javah) in auto mode
+update-alternatives: using /usr/lib/jvm/java-7-openjdk-amd64/bin/javap to provide /usr/bin/javap (javap) in auto mode
+update-alternatives: using /usr/lib/jvm/java-7-openjdk-amd64/bin/jcmd to provide /usr/bin/jcmd (jcmd) in auto mode
+update-alternatives: using /usr/lib/jvm/java-7-openjdk-amd64/bin/jconsole to provide /usr/bin/jconsole (jconsole) in auto mode
+update-alternatives: using /usr/lib/jvm/java-7-openjdk-amd64/bin/jdb to provide /usr/bin/jdb (jdb) in auto mode
+update-alternatives: using /usr/lib/jvm/java-7-openjdk-amd64/bin/jhat to provide /usr/bin/jhat (jhat) in auto mode
+update-alternatives: using /usr/lib/jvm/java-7-openjdk-amd64/bin/jinfo to provide /usr/bin/jinfo (jinfo) in auto mode
+update-alternatives: using /usr/lib/jvm/java-7-openjdk-amd64/bin/jmap to provide /usr/bin/jmap (jmap) in auto mode
+update-alternatives: using /usr/lib/jvm/java-7-openjdk-amd64/bin/jps to provide /usr/bin/jps (jps) in auto mode
+update-alternatives: using /usr/lib/jvm/java-7-openjdk-amd64/bin/jrunscript to provide /usr/bin/jrunscript (jrunscript) in auto mode
+update-alternatives: using /usr/lib/jvm/java-7-openjdk-amd64/bin/jsadebugd to provide /usr/bin/jsadebugd (jsadebugd) in auto mode
+update-alternatives: using /usr/lib/jvm/java-7-openjdk-amd64/bin/jstack to provide /usr/bin/jstack (jstack) in auto mode
+update-alternatives: using /usr/lib/jvm/java-7-openjdk-amd64/bin/jstat to provide /usr/bin/jstat (jstat) in auto mode
+update-alternatives: using /usr/lib/jvm/java-7-openjdk-amd64/bin/jstatd to provide /usr/bin/jstatd (jstatd) in auto mode
+update-alternatives: using /usr/lib/jvm/java-7-openjdk-amd64/bin/native2ascii to provide /usr/bin/native2ascii (native2ascii) in auto mode
+update-alternatives: using /usr/lib/jvm/java-7-openjdk-amd64/bin/rmic to provide /usr/bin/rmic (rmic) in auto mode
+update-alternatives: using /usr/lib/jvm/java-7-openjdk-amd64/bin/schemagen to provide /usr/bin/schemagen (schemagen) in auto mode
+update-alternatives: using /usr/lib/jvm/java-7-openjdk-amd64/bin/serialver to provide /usr/bin/serialver (serialver) in auto mode
+update-alternatives: using /usr/lib/jvm/java-7-openjdk-amd64/bin/wsgen to provide /usr/bin/wsgen (wsgen) in auto mode
+update-alternatives: using /usr/lib/jvm/java-7-openjdk-amd64/bin/wsimport to provide /usr/bin/wsimport (wsimport) in auto mode
+update-alternatives: using /usr/lib/jvm/java-7-openjdk-amd64/bin/xjc to provide /usr/bin/xjc (xjc) in auto mode
+Setting up default-jdk (2:1.7-51) ...
+Setting up ca-certificates-java (20130815ubuntu1) ...
+Adding debian:AddTrust_External_Root.pem
+Adding debian:Chambers_of_Commerce_Root_-_2008.pem
+Adding debian:VeriSign_Class_3_Public_Primary_Certification_Authority_-_G4.pem
+Adding debian:ACCVRAIZ1.pem
+Adding debian:DST_ACES_CA_X6.pem
+Adding debian:StartCom_Certification_Authority_G2.pem
+Adding debian:Secure_Global_CA.pem
+Adding debian:Microsec_e-Szigno_Root_CA_2009.pem
+Adding debian:SecureTrust_CA.pem
+Adding debian:StartCom_Certification_Authority_2.pem
+Adding debian:Verisign_Class_1_Public_Primary_Certification_Authority.pem
+Adding debian:Verisign_Class_1_Public_Primary_Certification_Authority_-_G3.pem
+Adding debian:Comodo_Secure_Services_root.pem
+Adding debian:S-TRUST_Authentication_and_Encryption_Root_CA_2005_PN.pem
+Adding debian:Sonera_Class_1_Root_CA.pem
+Adding debian:Equifax_Secure_eBusiness_CA_1.pem
+Adding debian:Certum_Trusted_Network_CA.pem
+Adding debian:Certplus_Class_2_Primary_CA.pem
+Adding debian:Certinomis_-_Root_CA.pem
+Adding debian:thawte_Primary_Root_CA.pem
+Adding debian:CFCA_EV_ROOT.pem
+Adding debian:DigiCert_High_Assurance_EV_Root_CA.pem
+Adding debian:certSIGN_ROOT_CA.pem
+Adding debian:SwissSign_Silver_CA_-_G2.pem
+Adding debian:CA_Disig.pem
+Adding debian:AddTrust_Qualified_Certificates_Root.pem
+Adding debian:Comodo_AAA_Services_root.pem
+Adding debian:Staat_der_Nederlanden_Root_CA_-_G3.pem
+Adding debian:EBG_Elektronik_Sertifika_Hizmet_Sağlayıcısı.pem
+Adding debian:Security_Communication_Root_CA.pem
+Adding debian:DigiCert_Global_Root_CA.pem
+Adding debian:Cybertrust_Global_Root.pem
+Adding debian:OISTE_WISeKey_Global_Root_GB_CA.pem
+Adding debian:COMODO_RSA_Certification_Authority.pem
+Adding debian:QuoVadis_Root_CA.pem
+Adding debian:Swisscom_Root_EV_CA_2.pem
+Adding debian:AC_Raíz_Certicámara_S.A..pem
+Adding debian:AddTrust_Public_Services_Root.pem
+Adding debian:COMODO_ECC_Certification_Authority.pem
+Adding debian:S-TRUST_Universal_Root_CA.pem
+Adding debian:AffirmTrust_Networking.pem
+Adding debian:Trustis_FPS_Root_CA.pem
+Adding debian:Camerfirma_Chambers_of_Commerce_Root.pem
+Adding debian:Entrust.net_Premium_2048_Secure_Server_CA.pem
+Adding debian:VeriSign_Class_3_Public_Primary_Certification_Authority_-_G5.pem
+Adding debian:Swisscom_Root_CA_2.pem
+Adding debian:DigiCert_Assured_ID_Root_G3.pem
+Adding debian:DST_Root_CA_X3.pem
+Adding debian:NetLock_Express_=Class_C=_Root.pem
+Adding debian:GlobalSign_ECC_Root_CA_-_R5.pem
+Adding debian:D-TRUST_Root_Class_3_CA_2_EV_2009.pem
+Adding debian:Verisign_Class_3_Public_Primary_Certification_Authority_2.pem
+Adding debian:Security_Communication_RootCA2.pem
+Adding debian:DigiCert_Assured_ID_Root_CA.pem
+Adding debian:Taiwan_GRCA.pem
+Adding debian:CA_Disig_Root_R2.pem
+Adding debian:WoSign_China.pem
+Adding debian:Swisscom_Root_CA_1.pem
+Adding debian:Actalis_Authentication_Root_CA.pem
+Adding debian:UTN_USERFirst_Hardware_Root_CA.pem
+Adding debian:DigiCert_Global_Root_G3.pem
+Adding debian:Comodo_Trusted_Services_root.pem
+Adding debian:Equifax_Secure_Global_eBusiness_CA.pem
+Adding debian:PSCProcert.pem
+Adding debian:Entrust_Root_Certification_Authority_-_G2.pem
+Adding debian:WellsSecure_Public_Root_Certificate_Authority.pem
+Adding debian:Go_Daddy_Root_Certificate_Authority_-_G2.pem
+Adding debian:Deutsche_Telekom_Root_CA_2.pem
+Adding debian:GeoTrust_Universal_CA.pem
+Adding debian:Certification_Authority_of_WoSign_G2.pem
+Adding debian:TÜBİTAK_UEKAE_Kök_Sertifika_Hizmet_Sağlayıcısı_-_Sürüm_3.pem
+Adding debian:Autoridad_de_Certificacion_Firmaprofesional_CIF_A62634068.pem
+Adding debian:Go_Daddy_Class_2_CA.pem
+Adding debian:GeoTrust_Universal_CA_2.pem
+Adding debian:AddTrust_Low-Value_Services_Root.pem
+Adding debian:COMODO_Certification_Authority.pem
+Adding debian:T-TeleSec_GlobalRoot_Class_3.pem
+Adding debian:GeoTrust_Primary_Certification_Authority.pem
+Adding debian:QuoVadis_Root_CA_1_G3.pem
+Adding debian:EC-ACC.pem
+Adding debian:Verisign_Class_2_Public_Primary_Certification_Authority_-_G2.pem
+Adding debian:Verisign_Class_3_Public_Primary_Certification_Authority.pem
+Adding debian:Buypass_Class_3_Root_CA.pem
+Adding debian:Hongkong_Post_Root_CA_1.pem
+Adding debian:Verisign_Class_1_Public_Primary_Certification_Authority_-_G2.pem
+Adding debian:OISTE_WISeKey_Global_Root_GA_CA.pem
+Adding debian:NetLock_Arany_=Class_Gold=_Főtanúsítvány.pem
+Adding debian:Juur-SK.pem
+Adding debian:Staat_der_Nederlanden_Root_CA.pem
+Adding debian:ComSign_CA.pem
+Adding debian:Verisign_Class_3_Public_Primary_Certification_Authority_-_G3.pem
+Adding debian:IGC_A.pem
+Adding debian:Starfield_Root_Certificate_Authority_-_G2.pem
+Adding debian:Certinomis_-_Autorité_Racine.pem
+Adding debian:TÜRKTRUST_Elektronik_Sertifika_Hizmet_Sağlayıcısı_H6.pem
+Adding debian:ePKI_Root_Certification_Authority.pem
+Adding debian:GeoTrust_Global_CA.pem
+Adding debian:AffirmTrust_Premium.pem
+Adding debian:RSA_Security_2048_v3.pem
+Adding debian:Microsec_e-Szigno_Root_CA.pem
+Adding debian:Verisign_Class_2_Public_Primary_Certification_Authority_-_G3.pem
+Adding debian:CNNIC_ROOT.pem
+Adding debian:GlobalSign_Root_CA_-_R3.pem
+Adding debian:NetLock_Qualified_=Class_QA=_Root.pem
+Adding debian:TWCA_Root_Certification_Authority.pem
+Adding debian:China_Internet_Network_Information_Center_EV_Certificates_Root.pem
+Adding debian:Root_CA_Generalitat_Valenciana.pem
+Adding debian:NetLock_Notary_=Class_A=_Root.pem
+Adding debian:EE_Certification_Centre_Root_CA.pem
+Adding debian:Izenpe.com.pem
+Adding debian:Certigna.pem
+Adding debian:USERTrust_ECC_Certification_Authority.pem
+Adding debian:Global_Chambersign_Root_-_2008.pem
+Adding debian:Hellenic_Academic_and_Research_Institutions_RootCA_2011.pem
+Adding debian:ACEDICOM_Root.pem
+Adding debian:WoSign.pem
+Adding debian:Buypass_Class_2_Root_CA.pem
+Adding debian:QuoVadis_Root_CA_3.pem
+Adding debian:Atos_TrustedRoot_2011.pem
+Adding debian:AffirmTrust_Commercial.pem
+Adding debian:CA_Disig_Root_R1.pem
+Adding debian:Equifax_Secure_CA.pem
+Adding debian:Starfield_Services_Root_Certificate_Authority_-_G2.pem
+Adding debian:SwissSign_Platinum_CA_-_G2.pem
+Adding debian:GeoTrust_Primary_Certification_Authority_-_G3.pem
+Adding debian:DigiCert_Global_Root_G2.pem
+Adding debian:Staat_der_Nederlanden_EV_Root_CA.pem
+Adding debian:Buypass_Class_2_CA_1.pem
+Adding debian:Visa_eCommerce_Root.pem
+Adding debian:XRamp_Global_CA_Root.pem
+Adding debian:GlobalSign_Root_CA.pem
+Adding debian:QuoVadis_Root_CA_2.pem
+Adding debian:ApplicationCA_-_Japanese_Government.pem
+Adding debian:Entrust_Root_Certification_Authority_-_EC1.pem
+Adding debian:DigiCert_Assured_ID_Root_G2.pem
+Adding debian:GeoTrust_Global_CA_2.pem
+Adding debian:Starfield_Class_2_CA.pem
+Adding debian:GlobalSign_ECC_Root_CA_-_R4.pem
+Adding debian:IdenTrust_Public_Sector_Root_CA_1.pem
+Adding debian:Security_Communication_EV_RootCA1.pem
+Adding debian:UTN_USERFirst_Email_Root_CA.pem
+Adding debian:CA_WoSign_ECC_Root.pem
+Adding debian:Camerfirma_Global_Chambersign_Root.pem
+Adding debian:thawte_Primary_Root_CA_-_G2.pem
+Adding debian:DigiCert_Trusted_Root_G4.pem
+Adding debian:Staat_der_Nederlanden_Root_CA_-_G2.pem
+Adding debian:Verisign_Class_3_Public_Primary_Certification_Authority_-_G2.pem
+Adding debian:T-TeleSec_GlobalRoot_Class_2.pem
+Adding debian:USERTrust_RSA_Certification_Authority.pem
+Adding debian:TÜRKTRUST_Elektronik_Sertifika_Hizmet_Sağlayıcısı_H5.pem
+Adding debian:Certum_Root_CA.pem
+Adding debian:Network_Solutions_Certificate_Authority.pem
+Adding debian:GeoTrust_Primary_Certification_Authority_-_G2.pem
+Adding debian:StartCom_Certification_Authority.pem
+Adding debian:Entrust_Root_Certification_Authority.pem
+Adding debian:TWCA_Global_Root_CA.pem
+Adding debian:D-TRUST_Root_Class_3_CA_2_2009.pem
+Adding debian:TC_TrustCenter_Class_3_CA_II.pem
+Adding debian:QuoVadis_Root_CA_3_G3.pem
+Adding debian:GlobalSign_Root_CA_-_R2.pem
+Adding debian:E-Tugra_Certification_Authority.pem
+Adding debian:thawte_Primary_Root_CA_-_G3.pem
+Adding debian:Baltimore_CyberTrust_Root.pem
+Adding debian:TURKTRUST_Certificate_Services_Provider_Root_2007.pem
+Adding debian:SecureSign_RootCA11.pem
+Adding debian:AffirmTrust_Premium_ECC.pem
+Adding debian:SwissSign_Gold_CA_-_G2.pem
+Adding debian:TeliaSonera_Root_CA_v1.pem
+Adding debian:IdenTrust_Commercial_Root_CA_1.pem
+Adding debian:Sonera_Class_2_Root_CA.pem
+Adding debian:VeriSign_Universal_Root_Certification_Authority.pem
+Adding debian:NetLock_Business_=Class_B=_Root.pem
+Adding debian:QuoVadis_Root_CA_2_G3.pem
+done.
+Setting up libatk-wrapper-java (0.30.4-4) ...
+Setting up libatk-wrapper-java-jni:amd64 (0.30.4-4) ...
+Processing triggers for libc-bin (2.19-0ubuntu6.11) ...
+Processing triggers for ca-certificates (20160104ubuntu0.14.04.1) ...
+Updating certificates in /etc/ssl/certs... 0 added, 0 removed; done.
+Running hooks in /etc/ca-certificates/update.d....
+done.
+done.
+root@mgmt:/home/vagrant#
+
+sudo apt-get install default-jdk
+Reading package lists... Done
+Building dependency tree
+Reading state information... Done
+The following extra packages will be installed:
+  ca-certificates-java default-jre default-jre-headless fonts-dejavu-extra
+  java-common libasyncns0 libatk-wrapper-java libatk-wrapper-java-jni libflac8
+  libgif4 libgtk2.0-0 libgtk2.0-bin libgtk2.0-common libice-dev libnspr4
+  libnss3 libnss3-nssdb libpcsclite1 libpthread-stubs0-dev libpulse0 libsctp1
+  libsm-dev libsndfile1 libvorbis0a libvorbisenc2 libvorbisfile3 libx11-6
+  libx11-dev libx11-doc libxau-dev libxcb1-dev libxdmcp-dev libxt-dev
+  lksctp-tools openjdk-7-jdk openjdk-7-jre openjdk-7-jre-headless tzdata
+  tzdata-java x11proto-core-dev x11proto-input-dev x11proto-kb-dev
+  xorg-sgml-doctools xtrans-dev
+Suggested packages:
+  equivs librsvg2-common gvfs libice-doc pcscd pulseaudio libsm-doc libxcb-doc
+  libxt-doc openjdk-7-demo openjdk-7-source visualvm icedtea-7-plugin
+  icedtea-7-jre-jamvm libnss-mdns sun-java6-fonts fonts-ipafont-gothic
+  fonts-ipafont-mincho fonts-wqy-microhei fonts-wqy-zenhei ttf-indic-fonts
+The following NEW packages will be installed:
+  ca-certificates-java default-jdk default-jre default-jre-headless
+  fonts-dejavu-extra java-common libasyncns0 libatk-wrapper-java
+  libatk-wrapper-java-jni libflac8 libgif4 libgtk2.0-0 libgtk2.0-bin
+  libgtk2.0-common libice-dev libnspr4 libnss3 libnss3-nssdb libpcsclite1
+  libpthread-stubs0-dev libpulse0 libsctp1 libsm-dev libsndfile1 libvorbisenc2
+  libx11-dev libx11-doc libxau-dev libxcb1-dev libxdmcp-dev libxt-dev
+  lksctp-tools openjdk-7-jdk openjdk-7-jre openjdk-7-jre-headless tzdata-java
+  x11proto-core-dev x11proto-input-dev x11proto-kb-dev xorg-sgml-doctools
+  xtrans-dev
+The following packages will be upgraded:
+  libvorbis0a libvorbisfile3 libx11-6 tzdata
+4 upgraded, 41 newly installed, 0 to remove and 199 not upgraded.
+Need to get 66.2 MB of archives.
+After this operation, 120 MB of additional disk space will be used.
+Do you want to continue? [Y/n] Y
+Get:1 http://archive.ubuntu.com/ubuntu/ trusty-updates/main libx11-6 amd64 2:1.6.2-1ubuntu2.1 [561 kB]
+Get:2 http://archive.ubuntu.com/ubuntu/ trusty/main libasyncns0 amd64 0.8-4ubuntu2 [11.9 kB]
+Get:3 http://archive.ubuntu.com/ubuntu/ trusty-updates/main libgtk2.0-common all 2.24.23-0ubuntu1.4 [121 kB]
+Get:4 http://archive.ubuntu.com/ubuntu/ trusty-updates/main libgtk2.0-0 amd64 2.24.23-0ubuntu1.4 [1,739 kB]
+Get:5 http://archive.ubuntu.com/ubuntu/ trusty-updates/main libnspr4 amd64 2:4.13.1-0ubuntu0.14.04.1 [110 kB]
+Get:6 http://archive.ubuntu.com/ubuntu/ trusty-updates/main libnss3-nssdb all 2:3.28.4-0ubuntu0.14.04.3 [10.6 kB]
+Get:7 http://archive.ubuntu.com/ubuntu/ trusty-updates/main libnss3 amd64 2:3.28.4-0ubuntu0.14.04.3 [1,121 kB]
+Get:8 http://archive.ubuntu.com/ubuntu/ trusty/main ca-certificates-java all 20130815ubuntu1 [13.4 kB]
+Get:9 http://archive.ubuntu.com/ubuntu/ trusty-updates/main tzdata all 2017c-0ubuntu0.14.04 [166 kB]
+Get:10 http://archive.ubuntu.com/ubuntu/ trusty-updates/main tzdata-java all 2017c-0ubuntu0.14.04 [70.1 kB]
+Get:11 http://archive.ubuntu.com/ubuntu/ trusty/main java-common all 0.51 [130 kB]
+Get:12 http://archive.ubuntu.com/ubuntu/ trusty-updates/main libpcsclite1 amd64 1.8.10-1ubuntu1.1 [21.1 kB]
+Get:13 http://archive.ubuntu.com/ubuntu/ trusty-updates/main libflac8 amd64 1.3.0-2ubuntu0.14.04.1 [80.2 kB]
+Get:14 http://archive.ubuntu.com/ubuntu/ trusty-updates/main libvorbisfile3 amd64 1.3.2-1.3ubuntu1.2 [15.8 kB]
+Get:15 http://archive.ubuntu.com/ubuntu/ trusty-updates/main libvorbis0a amd64 1.3.2-1.3ubuntu1.2 [87.2 kB]
+Get:16 http://archive.ubuntu.com/ubuntu/ trusty-updates/main libvorbisenc2 amd64 1.3.2-1.3ubuntu1.2 [84.6 kB]
+Get:17 http://archive.ubuntu.com/ubuntu/ trusty-updates/main libsndfile1 amd64 1.0.25-7ubuntu2.2 [136 kB]
+Get:18 http://archive.ubuntu.com/ubuntu/ trusty-updates/main libpulse0 amd64 1:4.0-0ubuntu11.1 [225 kB]
+Get:19 http://archive.ubuntu.com/ubuntu/ trusty/main libsctp1 amd64 1.0.15+dfsg-1 [9,226 B]
+Get:20 http://archive.ubuntu.com/ubuntu/ trusty-updates/main openjdk-7-jre-headless amd64 7u181-2.6.14-0ubuntu0.2 [39.5 MB]
+Get:21 http://archive.ubuntu.com/ubuntu/ trusty/main default-jre-headless amd64 2:1.7-51 [3,834 B]
+Get:22 http://archive.ubuntu.com/ubuntu/ trusty/main libgif4 amd64 4.1.6-11 [28.6 kB]
+Get:23 http://archive.ubuntu.com/ubuntu/ trusty-updates/main openjdk-7-jre amd64 7u181-2.6.14-0ubuntu0.2 [172 kB]
+Get:24 http://archive.ubuntu.com/ubuntu/ trusty/main default-jre amd64 2:1.7-51 [940 B]
+Get:25 http://archive.ubuntu.com/ubuntu/ trusty/main libatk-wrapper-java all 0.30.4-4 [30.2 kB]
+Get:26 http://archive.ubuntu.com/ubuntu/ trusty/main libatk-wrapper-java-jni amd64 0.30.4-4 [25.2 kB]
+Get:27 http://archive.ubuntu.com/ubuntu/ trusty-updates/main openjdk-7-jdk amd64 7u181-2.6.14-0ubuntu0.2 [16.0 MB]
+Get:28 http://archive.ubuntu.com/ubuntu/ trusty/main default-jdk amd64 2:1.7-51 [934 B]
+Get:29 http://archive.ubuntu.com/ubuntu/ trusty/main fonts-dejavu-extra all 2.34-1ubuntu1 [1,736 kB]
+Get:30 http://archive.ubuntu.com/ubuntu/ trusty-updates/main libgtk2.0-bin amd64 2.24.23-0ubuntu1.4 [9,774 B]
+Get:31 http://archive.ubuntu.com/ubuntu/ trusty/main xorg-sgml-doctools all 1:1.11-1 [12.9 kB]
+Err http://archive.ubuntu.com/ubuntu/ trusty-updates/main x11proto-core-dev all 7.0.26-1~ubuntu2
+  502  Server Hangup [IP: 91.189.88.162 80]
+Get:32 http://archive.ubuntu.com/ubuntu/ trusty/main libice-dev amd64 2:1.0.8-2 [57.6 kB]
+Get:33 http://archive.ubuntu.com/ubuntu/ trusty/main libpthread-stubs0-dev amd64 0.3-4 [4,068 B]
+Get:34 http://archive.ubuntu.com/ubuntu/ trusty/main libsm-dev amd64 2:1.2.1-2 [19.9 kB]
+Get:35 http://archive.ubuntu.com/ubuntu/ trusty/main libxau-dev amd64 1:1.0.8-1 [11.1 kB]
+Get:36 http://archive.ubuntu.com/ubuntu/ trusty/main libxdmcp-dev amd64 1:1.1.1-1 [26.9 kB]
+Get:37 http://archive.ubuntu.com/ubuntu/ trusty/main x11proto-input-dev all 2.3-1 [139 kB]
+Get:38 http://security.ubuntu.com/ubuntu/ trusty-security/main x11proto-core-dev all 7.0.26-1~ubuntu2 [700 kB]
+Get:39 http://archive.ubuntu.com/ubuntu/ trusty/main x11proto-kb-dev all 1.0.6-2 [269 kB]
+Get:40 http://archive.ubuntu.com/ubuntu/ trusty-updates/main xtrans-dev all 1.3.5-1~ubuntu14.04.2 [70.7 kB]
+Get:41 http://archive.ubuntu.com/ubuntu/ trusty/main libxcb1-dev amd64 1.10-2ubuntu1 [76.6 kB]
+Get:42 http://archive.ubuntu.com/ubuntu/ trusty-updates/main libx11-dev amd64 2:1.6.2-1ubuntu2.1 [632 kB]
+Get:43 http://archive.ubuntu.com/ubuntu/ trusty-updates/main libx11-doc all 2:1.6.2-1ubuntu2.1 [1,447 kB]
+Get:44 http://archive.ubuntu.com/ubuntu/ trusty/main libxt-dev amd64 1:1.1.4-1 [455 kB]
+Get:45 http://archive.ubuntu.com/ubuntu/ trusty/main lksctp-tools amd64 1.0.15+dfsg-1 [51.3 kB]
+Fetched 66.2 MB in 2min 56s (375 kB/s)
+Extracting templates from packages: 100%
+Preconfiguring packages ...
+(Reading database ... 66578 files and directories currently installed.)
+Preparing to unpack .../libx11-6_2%3a1.6.2-1ubuntu2.1_amd64.deb ...
+Unpacking libx11-6:amd64 (2:1.6.2-1ubuntu2.1) over (2:1.6.2-1ubuntu2) ...
+Selecting previously unselected package libasyncns0:amd64.
+Preparing to unpack .../libasyncns0_0.8-4ubuntu2_amd64.deb ...
+Unpacking libasyncns0:amd64 (0.8-4ubuntu2) ...
+Selecting previously unselected package libgtk2.0-common.
+Preparing to unpack .../libgtk2.0-common_2.24.23-0ubuntu1.4_all.deb ...
+Unpacking libgtk2.0-common (2.24.23-0ubuntu1.4) ...
+Selecting previously unselected package libgtk2.0-0:amd64.
+Preparing to unpack .../libgtk2.0-0_2.24.23-0ubuntu1.4_amd64.deb ...
+Unpacking libgtk2.0-0:amd64 (2.24.23-0ubuntu1.4) ...
+Selecting previously unselected package libnspr4:amd64.
+Preparing to unpack .../libnspr4_2%3a4.13.1-0ubuntu0.14.04.1_amd64.deb ...
+Unpacking libnspr4:amd64 (2:4.13.1-0ubuntu0.14.04.1) ...
+Selecting previously unselected package libnss3-nssdb.
+Preparing to unpack .../libnss3-nssdb_2%3a3.28.4-0ubuntu0.14.04.3_all.deb ...
+Unpacking libnss3-nssdb (2:3.28.4-0ubuntu0.14.04.3) ...
+Selecting previously unselected package libnss3:amd64.
+Preparing to unpack .../libnss3_2%3a3.28.4-0ubuntu0.14.04.3_amd64.deb ...
+Unpacking libnss3:amd64 (2:3.28.4-0ubuntu0.14.04.3) ...
+Selecting previously unselected package ca-certificates-java.
+Preparing to unpack .../ca-certificates-java_20130815ubuntu1_all.deb ...
+Unpacking ca-certificates-java (20130815ubuntu1) ...
+Preparing to unpack .../tzdata_2017c-0ubuntu0.14.04_all.deb ...
+Unpacking tzdata (2017c-0ubuntu0.14.04) over (2016j-0ubuntu0.14.04) ...
+Processing triggers for ca-certificates (20160104ubuntu0.14.04.1) ...
+Updating certificates in /etc/ssl/certs... 0 added, 0 removed; done.
+Running hooks in /etc/ca-certificates/update.d....done.
+Setting up tzdata (2017c-0ubuntu0.14.04) ...
+
+Current default time zone: 'Etc/UTC'
+Local time is now:      Sun Sep 23 18:11:00 UTC 2018.
+Universal Time is now:  Sun Sep 23 18:11:00 UTC 2018.
+Run 'dpkg-reconfigure tzdata' if you wish to change it.
+
+Selecting previously unselected package tzdata-java.
+(Reading database ... 66678 files and directories currently installed.)
+Preparing to unpack .../tzdata-java_2017c-0ubuntu0.14.04_all.deb ...
+Unpacking tzdata-java (2017c-0ubuntu0.14.04) ...
+Selecting previously unselected package java-common.
+Preparing to unpack .../java-common_0.51_all.deb ...
+Unpacking java-common (0.51) ...
+Selecting previously unselected package libpcsclite1:amd64.
+Preparing to unpack .../libpcsclite1_1.8.10-1ubuntu1.1_amd64.deb ...
+Unpacking libpcsclite1:amd64 (1.8.10-1ubuntu1.1) ...
+Selecting previously unselected package libflac8:amd64.
+Preparing to unpack .../libflac8_1.3.0-2ubuntu0.14.04.1_amd64.deb ...
+Unpacking libflac8:amd64 (1.3.0-2ubuntu0.14.04.1) ...
+Preparing to unpack .../libvorbisfile3_1.3.2-1.3ubuntu1.2_amd64.deb ...
+Unpacking libvorbisfile3:amd64 (1.3.2-1.3ubuntu1.2) over (1.3.2-1.3ubuntu1) ...
+Preparing to unpack .../libvorbis0a_1.3.2-1.3ubuntu1.2_amd64.deb ...
+Unpacking libvorbis0a:amd64 (1.3.2-1.3ubuntu1.2) over (1.3.2-1.3ubuntu1) ...
+Selecting previously unselected package libvorbisenc2:amd64.
+Preparing to unpack .../libvorbisenc2_1.3.2-1.3ubuntu1.2_amd64.deb ...
+Unpacking libvorbisenc2:amd64 (1.3.2-1.3ubuntu1.2) ...
+Selecting previously unselected package libsndfile1:amd64.
+Preparing to unpack .../libsndfile1_1.0.25-7ubuntu2.2_amd64.deb ...
+Unpacking libsndfile1:amd64 (1.0.25-7ubuntu2.2) ...
+Selecting previously unselected package libpulse0:amd64.
+Preparing to unpack .../libpulse0_1%3a4.0-0ubuntu11.1_amd64.deb ...
+Unpacking libpulse0:amd64 (1:4.0-0ubuntu11.1) ...
+Selecting previously unselected package libsctp1:amd64.
+Preparing to unpack .../libsctp1_1.0.15+dfsg-1_amd64.deb ...
+Unpacking libsctp1:amd64 (1.0.15+dfsg-1) ...
+Selecting previously unselected package openjdk-7-jre-headless:amd64.
+Preparing to unpack .../openjdk-7-jre-headless_7u181-2.6.14-0ubuntu0.2_amd64.deb ...
+Unpacking openjdk-7-jre-headless:amd64 (7u181-2.6.14-0ubuntu0.2) ...
+Selecting previously unselected package default-jre-headless.
+Preparing to unpack .../default-jre-headless_2%3a1.7-51_amd64.deb ...
+Unpacking default-jre-headless (2:1.7-51) ...
+Selecting previously unselected package libgif4:amd64.
+Preparing to unpack .../libgif4_4.1.6-11_amd64.deb ...
+Unpacking libgif4:amd64 (4.1.6-11) ...
+Selecting previously unselected package openjdk-7-jre:amd64.
+Preparing to unpack .../openjdk-7-jre_7u181-2.6.14-0ubuntu0.2_amd64.deb ...
+Unpacking openjdk-7-jre:amd64 (7u181-2.6.14-0ubuntu0.2) ...
+Selecting previously unselected package default-jre.
+Preparing to unpack .../default-jre_2%3a1.7-51_amd64.deb ...
+Unpacking default-jre (2:1.7-51) ...
+Selecting previously unselected package libatk-wrapper-java.
+Preparing to unpack .../libatk-wrapper-java_0.30.4-4_all.deb ...
+Unpacking libatk-wrapper-java (0.30.4-4) ...
+Selecting previously unselected package libatk-wrapper-java-jni:amd64.
+Preparing to unpack .../libatk-wrapper-java-jni_0.30.4-4_amd64.deb ...
+Unpacking libatk-wrapper-java-jni:amd64 (0.30.4-4) ...
+Selecting previously unselected package openjdk-7-jdk:amd64.
+Preparing to unpack .../openjdk-7-jdk_7u181-2.6.14-0ubuntu0.2_amd64.deb ...
+Unpacking openjdk-7-jdk:amd64 (7u181-2.6.14-0ubuntu0.2) ...
+Selecting previously unselected package default-jdk.
+Preparing to unpack .../default-jdk_2%3a1.7-51_amd64.deb ...
+Unpacking default-jdk (2:1.7-51) ...
+Selecting previously unselected package fonts-dejavu-extra.
+Preparing to unpack .../fonts-dejavu-extra_2.34-1ubuntu1_all.deb ...
+Unpacking fonts-dejavu-extra (2.34-1ubuntu1) ...
+Selecting previously unselected package libgtk2.0-bin.
+Preparing to unpack .../libgtk2.0-bin_2.24.23-0ubuntu1.4_amd64.deb ...
+Unpacking libgtk2.0-bin (2.24.23-0ubuntu1.4) ...
+Selecting previously unselected package xorg-sgml-doctools.
+Preparing to unpack .../xorg-sgml-doctools_1%3a1.11-1_all.deb ...
+Unpacking xorg-sgml-doctools (1:1.11-1) ...
+Selecting previously unselected package x11proto-core-dev.
+Preparing to unpack .../x11proto-core-dev_7.0.26-1~ubuntu2_all.deb ...
+Unpacking x11proto-core-dev (7.0.26-1~ubuntu2) ...
+Selecting previously unselected package libice-dev:amd64.
+Preparing to unpack .../libice-dev_2%3a1.0.8-2_amd64.deb ...
+Unpacking libice-dev:amd64 (2:1.0.8-2) ...
+Selecting previously unselected package libpthread-stubs0-dev:amd64.
+Preparing to unpack .../libpthread-stubs0-dev_0.3-4_amd64.deb ...
+Unpacking libpthread-stubs0-dev:amd64 (0.3-4) ...
+Selecting previously unselected package libsm-dev:amd64.
+Preparing to unpack .../libsm-dev_2%3a1.2.1-2_amd64.deb ...
+Unpacking libsm-dev:amd64 (2:1.2.1-2) ...
+Selecting previously unselected package libxau-dev:amd64.
+Preparing to unpack .../libxau-dev_1%3a1.0.8-1_amd64.deb ...
+Unpacking libxau-dev:amd64 (1:1.0.8-1) ...
+Selecting previously unselected package libxdmcp-dev:amd64.
+Preparing to unpack .../libxdmcp-dev_1%3a1.1.1-1_amd64.deb ...
+Unpacking libxdmcp-dev:amd64 (1:1.1.1-1) ...
+Selecting previously unselected package x11proto-input-dev.
+Preparing to unpack .../x11proto-input-dev_2.3-1_all.deb ...
+Unpacking x11proto-input-dev (2.3-1) ...
+Selecting previously unselected package x11proto-kb-dev.
+Preparing to unpack .../x11proto-kb-dev_1.0.6-2_all.deb ...
+Unpacking x11proto-kb-dev (1.0.6-2) ...
+Selecting previously unselected package xtrans-dev.
+Preparing to unpack .../xtrans-dev_1.3.5-1~ubuntu14.04.2_all.deb ...
+Unpacking xtrans-dev (1.3.5-1~ubuntu14.04.2) ...
+Selecting previously unselected package libxcb1-dev:amd64.
+Preparing to unpack .../libxcb1-dev_1.10-2ubuntu1_amd64.deb ...
+Unpacking libxcb1-dev:amd64 (1.10-2ubuntu1) ...
+Selecting previously unselected package libx11-dev:amd64.
+Preparing to unpack .../libx11-dev_2%3a1.6.2-1ubuntu2.1_amd64.deb ...
+Unpacking libx11-dev:amd64 (2:1.6.2-1ubuntu2.1) ...
+Selecting previously unselected package libx11-doc.
+Preparing to unpack .../libx11-doc_2%3a1.6.2-1ubuntu2.1_all.deb ...
+Unpacking libx11-doc (2:1.6.2-1ubuntu2.1) ...
+Selecting previously unselected package libxt-dev:amd64.
+Preparing to unpack .../libxt-dev_1%3a1.1.4-1_amd64.deb ...
+Unpacking libxt-dev:amd64 (1:1.1.4-1) ...
+Selecting previously unselected package lksctp-tools.
+Preparing to unpack .../lksctp-tools_1.0.15+dfsg-1_amd64.deb ...
+Unpacking lksctp-tools (1.0.15+dfsg-1) ...
+Processing triggers for man-db (2.6.7.1-1ubuntu1) ...
+Processing triggers for hicolor-icon-theme (0.13-1) ...
+Processing triggers for mime-support (3.54ubuntu1.1) ...
+Processing triggers for fontconfig (2.11.0-0ubuntu4.2) ...
+Setting up libx11-6:amd64 (2:1.6.2-1ubuntu2.1) ...
+Setting up libasyncns0:amd64 (0.8-4ubuntu2) ...
+Setting up libgtk2.0-common (2.24.23-0ubuntu1.4) ...
+Setting up libgtk2.0-0:amd64 (2.24.23-0ubuntu1.4) ...
+Setting up libnspr4:amd64 (2:4.13.1-0ubuntu0.14.04.1) ...
+Setting up tzdata-java (2017c-0ubuntu0.14.04) ...
+Setting up java-common (0.51) ...
+Setting up libpcsclite1:amd64 (1.8.10-1ubuntu1.1) ...
+Setting up libflac8:amd64 (1.3.0-2ubuntu0.14.04.1) ...
+Setting up libvorbis0a:amd64 (1.3.2-1.3ubuntu1.2) ...
+Setting up libvorbisenc2:amd64 (1.3.2-1.3ubuntu1.2) ...
+Setting up libsndfile1:amd64 (1.0.25-7ubuntu2.2) ...
+Setting up libpulse0:amd64 (1:4.0-0ubuntu11.1) ...
+Setting up libsctp1:amd64 (1.0.15+dfsg-1) ...
+Setting up libvorbisfile3:amd64 (1.3.2-1.3ubuntu1.2) ...
+Setting up libgif4:amd64 (4.1.6-11) ...
+Setting up fonts-dejavu-extra (2.34-1ubuntu1) ...
+Setting up libgtk2.0-bin (2.24.23-0ubuntu1.4) ...
+Setting up xorg-sgml-doctools (1:1.11-1) ...
+Setting up x11proto-core-dev (7.0.26-1~ubuntu2) ...
+Setting up libice-dev:amd64 (2:1.0.8-2) ...
+Setting up libpthread-stubs0-dev:amd64 (0.3-4) ...
+Setting up libsm-dev:amd64 (2:1.2.1-2) ...
+Setting up libxau-dev:amd64 (1:1.0.8-1) ...
+Setting up libxdmcp-dev:amd64 (1:1.1.1-1) ...
+Setting up x11proto-input-dev (2.3-1) ...
+Setting up x11proto-kb-dev (1.0.6-2) ...
+Setting up xtrans-dev (1.3.5-1~ubuntu14.04.2) ...
+Setting up libxcb1-dev:amd64 (1.10-2ubuntu1) ...
+Setting up libx11-dev:amd64 (2:1.6.2-1ubuntu2.1) ...
+Setting up libx11-doc (2:1.6.2-1ubuntu2.1) ...
+Setting up libxt-dev:amd64 (1:1.1.4-1) ...
+Setting up lksctp-tools (1.0.15+dfsg-1) ...
+Setting up libnss3-nssdb (2:3.28.4-0ubuntu0.14.04.3) ...
+Setting up libnss3:amd64 (2:3.28.4-0ubuntu0.14.04.3) ...
+Setting up openjdk-7-jre-headless:amd64 (7u181-2.6.14-0ubuntu0.2) ...
+update-alternatives: using /usr/lib/jvm/java-7-openjdk-amd64/jre/bin/java to provide /usr/bin/java (java) in auto mode
+update-alternatives: using /usr/lib/jvm/java-7-openjdk-amd64/jre/bin/keytool to provide /usr/bin/keytool (keytool) in auto mode
+update-alternatives: using /usr/lib/jvm/java-7-openjdk-amd64/jre/bin/pack200 to provide /usr/bin/pack200 (pack200) in auto mode
+update-alternatives: using /usr/lib/jvm/java-7-openjdk-amd64/jre/bin/rmid to provide /usr/bin/rmid (rmid) in auto mode
+update-alternatives: using /usr/lib/jvm/java-7-openjdk-amd64/jre/bin/rmiregistry to provide /usr/bin/rmiregistry (rmiregistry) in auto mode
+update-alternatives: using /usr/lib/jvm/java-7-openjdk-amd64/jre/bin/unpack200 to provide /usr/bin/unpack200 (unpack200) in auto mode
+update-alternatives: using /usr/lib/jvm/java-7-openjdk-amd64/jre/bin/orbd to provide /usr/bin/orbd (orbd) in auto mode
+update-alternatives: using /usr/lib/jvm/java-7-openjdk-amd64/jre/bin/servertool to provide /usr/bin/servertool (servertool) in auto mode
+update-alternatives: using /usr/lib/jvm/java-7-openjdk-amd64/jre/bin/tnameserv to provide /usr/bin/tnameserv (tnameserv) in auto mode
+update-alternatives: using /usr/lib/jvm/java-7-openjdk-amd64/jre/lib/jexec to provide /usr/bin/jexec (jexec) in auto mode
+Setting up default-jre-headless (2:1.7-51) ...
+Setting up openjdk-7-jre:amd64 (7u181-2.6.14-0ubuntu0.2) ...
+update-alternatives: using /usr/lib/jvm/java-7-openjdk-amd64/jre/bin/policytool to provide /usr/bin/policytool (policytool) in auto mode
+Setting up default-jre (2:1.7-51) ...
+Setting up openjdk-7-jdk:amd64 (7u181-2.6.14-0ubuntu0.2) ...
+update-alternatives: using /usr/lib/jvm/java-7-openjdk-amd64/bin/appletviewer to provide /usr/bin/appletviewer (appletviewer) in auto mode
+update-alternatives: using /usr/lib/jvm/java-7-openjdk-amd64/bin/extcheck to provide /usr/bin/extcheck (extcheck) in auto mode
+update-alternatives: using /usr/lib/jvm/java-7-openjdk-amd64/bin/idlj to provide /usr/bin/idlj (idlj) in auto mode
+update-alternatives: using /usr/lib/jvm/java-7-openjdk-amd64/bin/jar to provide /usr/bin/jar (jar) in auto mode
+update-alternatives: using /usr/lib/jvm/java-7-openjdk-amd64/bin/jarsigner to provide /usr/bin/jarsigner (jarsigner) in auto mode
+update-alternatives: using /usr/lib/jvm/java-7-openjdk-amd64/bin/javac to provide /usr/bin/javac (javac) in auto mode
+update-alternatives: using /usr/lib/jvm/java-7-openjdk-amd64/bin/javadoc to provide /usr/bin/javadoc (javadoc) in auto mode
+update-alternatives: using /usr/lib/jvm/java-7-openjdk-amd64/bin/javah to provide /usr/bin/javah (javah) in auto mode
+update-alternatives: using /usr/lib/jvm/java-7-openjdk-amd64/bin/javap to provide /usr/bin/javap (javap) in auto mode
+update-alternatives: using /usr/lib/jvm/java-7-openjdk-amd64/bin/jcmd to provide /usr/bin/jcmd (jcmd) in auto mode
+update-alternatives: using /usr/lib/jvm/java-7-openjdk-amd64/bin/jconsole to provide /usr/bin/jconsole (jconsole) in auto mode
+update-alternatives: using /usr/lib/jvm/java-7-openjdk-amd64/bin/jdb to provide /usr/bin/jdb (jdb) in auto mode
+update-alternatives: using /usr/lib/jvm/java-7-openjdk-amd64/bin/jhat to provide /usr/bin/jhat (jhat) in auto mode
+update-alternatives: using /usr/lib/jvm/java-7-openjdk-amd64/bin/jinfo to provide /usr/bin/jinfo (jinfo) in auto mode
+update-alternatives: using /usr/lib/jvm/java-7-openjdk-amd64/bin/jmap to provide /usr/bin/jmap (jmap) in auto mode
+update-alternatives: using /usr/lib/jvm/java-7-openjdk-amd64/bin/jps to provide /usr/bin/jps (jps) in auto mode
+update-alternatives: using /usr/lib/jvm/java-7-openjdk-amd64/bin/jrunscript to provide /usr/bin/jrunscript (jrunscript) in auto mode
+update-alternatives: using /usr/lib/jvm/java-7-openjdk-amd64/bin/jsadebugd to provide /usr/bin/jsadebugd (jsadebugd) in auto mode
+update-alternatives: using /usr/lib/jvm/java-7-openjdk-amd64/bin/jstack to provide /usr/bin/jstack (jstack) in auto mode
+update-alternatives: using /usr/lib/jvm/java-7-openjdk-amd64/bin/jstat to provide /usr/bin/jstat (jstat) in auto mode
+update-alternatives: using /usr/lib/jvm/java-7-openjdk-amd64/bin/jstatd to provide /usr/bin/jstatd (jstatd) in auto mode
+update-alternatives: using /usr/lib/jvm/java-7-openjdk-amd64/bin/native2ascii to provide /usr/bin/native2ascii (native2ascii) in auto mode
+update-alternatives: using /usr/lib/jvm/java-7-openjdk-amd64/bin/rmic to provide /usr/bin/rmic (rmic) in auto mode
+update-alternatives: using /usr/lib/jvm/java-7-openjdk-amd64/bin/schemagen to provide /usr/bin/schemagen (schemagen) in auto mode
+update-alternatives: using /usr/lib/jvm/java-7-openjdk-amd64/bin/serialver to provide /usr/bin/serialver (serialver) in auto mode
+update-alternatives: using /usr/lib/jvm/java-7-openjdk-amd64/bin/wsgen to provide /usr/bin/wsgen (wsgen) in auto mode
+update-alternatives: using /usr/lib/jvm/java-7-openjdk-amd64/bin/wsimport to provide /usr/bin/wsimport (wsimport) in auto mode
+update-alternatives: using /usr/lib/jvm/java-7-openjdk-amd64/bin/xjc to provide /usr/bin/xjc (xjc) in auto mode
+Setting up default-jdk (2:1.7-51) ...
+Setting up ca-certificates-java (20130815ubuntu1) ...
+Adding debian:AddTrust_External_Root.pem
+Adding debian:Chambers_of_Commerce_Root_-_2008.pem
+Adding debian:VeriSign_Class_3_Public_Primary_Certification_Authority_-_G4.pem
+Adding debian:ACCVRAIZ1.pem
+Adding debian:DST_ACES_CA_X6.pem
+Adding debian:StartCom_Certification_Authority_G2.pem
+Adding debian:Secure_Global_CA.pem
+Adding debian:Microsec_e-Szigno_Root_CA_2009.pem
+Adding debian:SecureTrust_CA.pem
+Adding debian:StartCom_Certification_Authority_2.pem
+Adding debian:Verisign_Class_1_Public_Primary_Certification_Authority.pem
+Adding debian:Verisign_Class_1_Public_Primary_Certification_Authority_-_G3.pem
+Adding debian:Comodo_Secure_Services_root.pem
+Adding debian:S-TRUST_Authentication_and_Encryption_Root_CA_2005_PN.pem
+Adding debian:Sonera_Class_1_Root_CA.pem
+Adding debian:Equifax_Secure_eBusiness_CA_1.pem
+Adding debian:Certum_Trusted_Network_CA.pem
+Adding debian:Certplus_Class_2_Primary_CA.pem
+Adding debian:Certinomis_-_Root_CA.pem
+Adding debian:thawte_Primary_Root_CA.pem
+Adding debian:CFCA_EV_ROOT.pem
+Adding debian:DigiCert_High_Assurance_EV_Root_CA.pem
+Adding debian:certSIGN_ROOT_CA.pem
+Adding debian:SwissSign_Silver_CA_-_G2.pem
+Adding debian:CA_Disig.pem
+Adding debian:AddTrust_Qualified_Certificates_Root.pem
+Adding debian:Comodo_AAA_Services_root.pem
+Adding debian:Staat_der_Nederlanden_Root_CA_-_G3.pem
+Adding debian:EBG_Elektronik_Sertifika_Hizmet_Sağlayıcısı.pem
+Adding debian:Security_Communication_Root_CA.pem
+Adding debian:DigiCert_Global_Root_CA.pem
+Adding debian:Cybertrust_Global_Root.pem
+Adding debian:OISTE_WISeKey_Global_Root_GB_CA.pem
+Adding debian:COMODO_RSA_Certification_Authority.pem
+Adding debian:QuoVadis_Root_CA.pem
+Adding debian:Swisscom_Root_EV_CA_2.pem
+Adding debian:AC_Raíz_Certicámara_S.A..pem
+Adding debian:AddTrust_Public_Services_Root.pem
+Adding debian:COMODO_ECC_Certification_Authority.pem
+Adding debian:S-TRUST_Universal_Root_CA.pem
+Adding debian:AffirmTrust_Networking.pem
+Adding debian:Trustis_FPS_Root_CA.pem
+Adding debian:Camerfirma_Chambers_of_Commerce_Root.pem
+Adding debian:Entrust.net_Premium_2048_Secure_Server_CA.pem
+Adding debian:VeriSign_Class_3_Public_Primary_Certification_Authority_-_G5.pem
+Adding debian:Swisscom_Root_CA_2.pem
+Adding debian:DigiCert_Assured_ID_Root_G3.pem
+Adding debian:DST_Root_CA_X3.pem
+Adding debian:NetLock_Express_=Class_C=_Root.pem
+Adding debian:GlobalSign_ECC_Root_CA_-_R5.pem
+Adding debian:D-TRUST_Root_Class_3_CA_2_EV_2009.pem
+Adding debian:Verisign_Class_3_Public_Primary_Certification_Authority_2.pem
+Adding debian:Security_Communication_RootCA2.pem
+Adding debian:DigiCert_Assured_ID_Root_CA.pem
+Adding debian:Taiwan_GRCA.pem
+Adding debian:CA_Disig_Root_R2.pem
+Adding debian:WoSign_China.pem
+Adding debian:Swisscom_Root_CA_1.pem
+Adding debian:Actalis_Authentication_Root_CA.pem
+Adding debian:UTN_USERFirst_Hardware_Root_CA.pem
+Adding debian:DigiCert_Global_Root_G3.pem
+Adding debian:Comodo_Trusted_Services_root.pem
+Adding debian:Equifax_Secure_Global_eBusiness_CA.pem
+Adding debian:PSCProcert.pem
+Adding debian:Entrust_Root_Certification_Authority_-_G2.pem
+Adding debian:WellsSecure_Public_Root_Certificate_Authority.pem
+Adding debian:Go_Daddy_Root_Certificate_Authority_-_G2.pem
+Adding debian:Deutsche_Telekom_Root_CA_2.pem
+Adding debian:GeoTrust_Universal_CA.pem
+Adding debian:Certification_Authority_of_WoSign_G2.pem
+Adding debian:TÜBİTAK_UEKAE_Kök_Sertifika_Hizmet_Sağlayıcısı_-_Sürüm_3.pem
+Adding debian:Autoridad_de_Certificacion_Firmaprofesional_CIF_A62634068.pem
+Adding debian:Go_Daddy_Class_2_CA.pem
+Adding debian:GeoTrust_Universal_CA_2.pem
+Adding debian:AddTrust_Low-Value_Services_Root.pem
+Adding debian:COMODO_Certification_Authority.pem
+Adding debian:T-TeleSec_GlobalRoot_Class_3.pem
+Adding debian:GeoTrust_Primary_Certification_Authority.pem
+Adding debian:QuoVadis_Root_CA_1_G3.pem
+Adding debian:EC-ACC.pem
+Adding debian:Verisign_Class_2_Public_Primary_Certification_Authority_-_G2.pem
+Adding debian:Verisign_Class_3_Public_Primary_Certification_Authority.pem
+Adding debian:Buypass_Class_3_Root_CA.pem
+Adding debian:Hongkong_Post_Root_CA_1.pem
+Adding debian:Verisign_Class_1_Public_Primary_Certification_Authority_-_G2.pem
+Adding debian:OISTE_WISeKey_Global_Root_GA_CA.pem
+Adding debian:NetLock_Arany_=Class_Gold=_Főtanúsítvány.pem
+Adding debian:Juur-SK.pem
+Adding debian:Staat_der_Nederlanden_Root_CA.pem
+Adding debian:ComSign_CA.pem
+Adding debian:Verisign_Class_3_Public_Primary_Certification_Authority_-_G3.pem
+Adding debian:IGC_A.pem
+Adding debian:Starfield_Root_Certificate_Authority_-_G2.pem
+Adding debian:Certinomis_-_Autorité_Racine.pem
+Adding debian:TÜRKTRUST_Elektronik_Sertifika_Hizmet_Sağlayıcısı_H6.pem
+Adding debian:ePKI_Root_Certification_Authority.pem
+Adding debian:GeoTrust_Global_CA.pem
+Adding debian:AffirmTrust_Premium.pem
+Adding debian:RSA_Security_2048_v3.pem
+Adding debian:Microsec_e-Szigno_Root_CA.pem
+Adding debian:Verisign_Class_2_Public_Primary_Certification_Authority_-_G3.pem
+Adding debian:CNNIC_ROOT.pem
+Adding debian:GlobalSign_Root_CA_-_R3.pem
+Adding debian:NetLock_Qualified_=Class_QA=_Root.pem
+Adding debian:TWCA_Root_Certification_Authority.pem
+Adding debian:China_Internet_Network_Information_Center_EV_Certificates_Root.pem
+Adding debian:Root_CA_Generalitat_Valenciana.pem
+Adding debian:NetLock_Notary_=Class_A=_Root.pem
+Adding debian:EE_Certification_Centre_Root_CA.pem
+Adding debian:Izenpe.com.pem
+Adding debian:Certigna.pem
+Adding debian:USERTrust_ECC_Certification_Authority.pem
+Adding debian:Global_Chambersign_Root_-_2008.pem
+Adding debian:Hellenic_Academic_and_Research_Institutions_RootCA_2011.pem
+Adding debian:ACEDICOM_Root.pem
+Adding debian:WoSign.pem
+Adding debian:Buypass_Class_2_Root_CA.pem
+Adding debian:QuoVadis_Root_CA_3.pem
+Adding debian:Atos_TrustedRoot_2011.pem
+Adding debian:AffirmTrust_Commercial.pem
+Adding debian:CA_Disig_Root_R1.pem
+Adding debian:Equifax_Secure_CA.pem
+Adding debian:Starfield_Services_Root_Certificate_Authority_-_G2.pem
+Adding debian:SwissSign_Platinum_CA_-_G2.pem
+Adding debian:GeoTrust_Primary_Certification_Authority_-_G3.pem
+Adding debian:DigiCert_Global_Root_G2.pem
+Adding debian:Staat_der_Nederlanden_EV_Root_CA.pem
+Adding debian:Buypass_Class_2_CA_1.pem
+Adding debian:Visa_eCommerce_Root.pem
+Adding debian:XRamp_Global_CA_Root.pem
+Adding debian:GlobalSign_Root_CA.pem
+Adding debian:QuoVadis_Root_CA_2.pem
+Adding debian:ApplicationCA_-_Japanese_Government.pem
+Adding debian:Entrust_Root_Certification_Authority_-_EC1.pem
+Adding debian:DigiCert_Assured_ID_Root_G2.pem
+Adding debian:GeoTrust_Global_CA_2.pem
+Adding debian:Starfield_Class_2_CA.pem
+Adding debian:GlobalSign_ECC_Root_CA_-_R4.pem
+Adding debian:IdenTrust_Public_Sector_Root_CA_1.pem
+Adding debian:Security_Communication_EV_RootCA1.pem
+Adding debian:UTN_USERFirst_Email_Root_CA.pem
+Adding debian:CA_WoSign_ECC_Root.pem
+Adding debian:Camerfirma_Global_Chambersign_Root.pem
+Adding debian:thawte_Primary_Root_CA_-_G2.pem
+Adding debian:DigiCert_Trusted_Root_G4.pem
+Adding debian:Staat_der_Nederlanden_Root_CA_-_G2.pem
+Adding debian:Verisign_Class_3_Public_Primary_Certification_Authority_-_G2.pem
+Adding debian:T-TeleSec_GlobalRoot_Class_2.pem
+Adding debian:USERTrust_RSA_Certification_Authority.pem
+Adding debian:TÜRKTRUST_Elektronik_Sertifika_Hizmet_Sağlayıcısı_H5.pem
+Adding debian:Certum_Root_CA.pem
+Adding debian:Network_Solutions_Certificate_Authority.pem
+Adding debian:GeoTrust_Primary_Certification_Authority_-_G2.pem
+Adding debian:StartCom_Certification_Authority.pem
+Adding debian:Entrust_Root_Certification_Authority.pem
+Adding debian:TWCA_Global_Root_CA.pem
+Adding debian:D-TRUST_Root_Class_3_CA_2_2009.pem
+Adding debian:TC_TrustCenter_Class_3_CA_II.pem
+Adding debian:QuoVadis_Root_CA_3_G3.pem
+Adding debian:GlobalSign_Root_CA_-_R2.pem
+Adding debian:E-Tugra_Certification_Authority.pem
+Adding debian:thawte_Primary_Root_CA_-_G3.pem
+Adding debian:Baltimore_CyberTrust_Root.pem
+Adding debian:TURKTRUST_Certificate_Services_Provider_Root_2007.pem
+Adding debian:SecureSign_RootCA11.pem
+Adding debian:AffirmTrust_Premium_ECC.pem
+Adding debian:SwissSign_Gold_CA_-_G2.pem
+Adding debian:TeliaSonera_Root_CA_v1.pem
+Adding debian:IdenTrust_Commercial_Root_CA_1.pem
+Adding debian:Sonera_Class_2_Root_CA.pem
+Adding debian:VeriSign_Universal_Root_Certification_Authority.pem
+Adding debian:NetLock_Business_=Class_B=_Root.pem
+Adding debian:QuoVadis_Root_CA_2_G3.pem
+done.
+Setting up libatk-wrapper-java (0.30.4-4) ...
+Setting up libatk-wrapper-java-jni:amd64 (0.30.4-4) ...
+Processing triggers for libc-bin (2.19-0ubuntu6.11) ...
+Processing triggers for ca-certificates (20160104ubuntu0.14.04.1) ...
+Updating certificates in /etc/ssl/certs... 0 added, 0 removed; done.
+Running hooks in /etc/ca-certificates/update.d....
+done.
+done.
+root@mgmt:/home/vagrant#
+root@mgmt:/home/vagrant# sudo groupadd tomcat
+root@mgmt:/home/vagrant# sudo useradd -s /bin/false -g tomcat -d /opt/tomcat tomcat
+root@mgmt:/home/vagrant#
+root@mgmt:/opt# mkdir /opt/tomcat
+root@mgmt:~# wget http://www-eu.apache.org/dist/tomcat/tomcat-8/v8.5.34/bin/apache-tomcat-8.5.34.tar.gzroot@mgmt:/opt# mkdir /opt/tomcat
+--2018-09-23 19:03:35--  http://www-eu.apache.org/dist/tomcat/tomcat-8/v8.5.34/bin/apache-tomcat-8.5.34.tar.gzroot@mgmt:/opt
+Resolving www-eu.apache.org (www-eu.apache.org)... 95.216.24.32, 2a01:4f9:2a:185f::2
+Connecting to www-eu.apache.org (www-eu.apache.org)|95.216.24.32|:80... connected.
+HTTP request sent, awaiting response... 404 Not Found
+2018-09-23 19:03:36 ERROR 404: Not Found.
+
+--2018-09-23 19:03:36--  http://mkdir/
+Resolving mkdir (mkdir)... failed: Name or service not known.
+wget: unable to resolve host address ‘mkdir’
+/opt/tomcat: Scheme missing.
+root@mgmt:~# wget http://www-eu.apache.org/dist/tomcat/tomcat-8/v8.5.34/bin/apache-tomcat-8.5.34.tar.gz
+--2018-09-23 19:03:58--  http://www-eu.apache.org/dist/tomcat/tomcat-8/v8.5.34/bin/apache-tomcat-8.5.34.tar.gz
+Resolving www-eu.apache.org (www-eu.apache.org)... 95.216.24.32, 2a01:4f9:2a:185f::2
+Connecting to www-eu.apache.org (www-eu.apache.org)|95.216.24.32|:80... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 9625824 (9.2M) [application/x-gzip]
+Saving to: ‘apache-tomcat-8.5.34.tar.gz’
+
+100%[======================================>] 9,625,824    516KB/s   in 17s
+
+2018-09-23 19:04:15 (543 KB/s) - ‘apache-tomcat-8.5.34.tar.gz’ saved [9625824/9625824]
+root@mgmt:~# sudo tar xvf apache-tomcat-8*tar.gz -C /opt/tomcat --strip-components=1
+apache-tomcat-8.5.34/conf/
+apache-tomcat-8.5.34/conf/catalina.policy
+apache-tomcat-8.5.34/conf/catalina.properties
+apache-tomcat-8.5.34/conf/context.xml
+apache-tomcat-8.5.34/conf/jaspic-providers.xml
+apache-tomcat-8.5.34/conf/jaspic-providers.xsd
+apache-tomcat-8.5.34/conf/logging.properties
+apache-tomcat-8.5.34/conf/server.xml
+apache-tomcat-8.5.34/conf/tomcat-users.xml
+apache-tomcat-8.5.34/conf/tomcat-users.xsd
+apache-tomcat-8.5.34/conf/web.xml
+apache-tomcat-8.5.34/bin/
+apache-tomcat-8.5.34/lib/
+apache-tomcat-8.5.34/logs/
+apache-tomcat-8.5.34/temp/
+apache-tomcat-8.5.34/webapps/
+apache-tomcat-8.5.34/webapps/ROOT/
+apache-tomcat-8.5.34/webapps/ROOT/WEB-INF/
+apache-tomcat-8.5.34/webapps/docs/
+apache-tomcat-8.5.34/webapps/docs/WEB-INF/
+apache-tomcat-8.5.34/webapps/docs/api/
+apache-tomcat-8.5.34/webapps/docs/appdev/
+apache-tomcat-8.5.34/webapps/docs/appdev/sample/
+apache-tomcat-8.5.34/webapps/docs/appdev/sample/docs/
+apache-tomcat-8.5.34/webapps/docs/appdev/sample/src/
+apache-tomcat-8.5.34/webapps/docs/appdev/sample/src/mypackage/
+apache-tomcat-8.5.34/webapps/docs/appdev/sample/web/
+apache-tomcat-8.5.34/webapps/docs/appdev/sample/web/WEB-INF/
+apache-tomcat-8.5.34/webapps/docs/appdev/sample/web/images/
+apache-tomcat-8.5.34/webapps/docs/architecture/
+apache-tomcat-8.5.34/webapps/docs/architecture/requestProcess/
+apache-tomcat-8.5.34/webapps/docs/architecture/startup/
+apache-tomcat-8.5.34/webapps/docs/config/
+apache-tomcat-8.5.34/webapps/docs/elapi/
+apache-tomcat-8.5.34/webapps/docs/funcspecs/
+apache-tomcat-8.5.34/webapps/docs/images/
+apache-tomcat-8.5.34/webapps/docs/images/fonts/
+apache-tomcat-8.5.34/webapps/docs/jspapi/
+apache-tomcat-8.5.34/webapps/docs/servletapi/
+apache-tomcat-8.5.34/webapps/docs/tribes/
+apache-tomcat-8.5.34/webapps/docs/websocketapi/
+apache-tomcat-8.5.34/webapps/examples/
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/async/
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/cal/
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/checkbox/
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/colors/
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/compressionFilters/
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/dates/
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/error/
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/examples/
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/filters/
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/jsp2/
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/jsp2/examples/
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/jsp2/examples/el/
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/jsp2/examples/simpletag/
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/listeners/
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/nonblocking/
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/num/
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/sessions/
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/util/
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/validators/
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/websocket/
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/websocket/chat/
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/websocket/drawboard/
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/websocket/drawboard/wsmessages/
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/websocket/echo/
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/websocket/snake/
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/jsp/
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/jsp2/
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/jsp/applet/
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/lib/
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/tags/
+apache-tomcat-8.5.34/webapps/examples/jsp/
+apache-tomcat-8.5.34/webapps/examples/jsp/async/
+apache-tomcat-8.5.34/webapps/examples/jsp/cal/
+apache-tomcat-8.5.34/webapps/examples/jsp/checkbox/
+apache-tomcat-8.5.34/webapps/examples/jsp/colors/
+apache-tomcat-8.5.34/webapps/examples/jsp/dates/
+apache-tomcat-8.5.34/webapps/examples/jsp/error/
+apache-tomcat-8.5.34/webapps/examples/jsp/forward/
+apache-tomcat-8.5.34/webapps/examples/jsp/images/
+apache-tomcat-8.5.34/webapps/examples/jsp/include/
+apache-tomcat-8.5.34/webapps/examples/jsp/jsp2/
+apache-tomcat-8.5.34/webapps/examples/jsp/jsp2/el/
+apache-tomcat-8.5.34/webapps/examples/jsp/jsp2/jspattribute/
+apache-tomcat-8.5.34/webapps/examples/jsp/jsp2/jspx/
+apache-tomcat-8.5.34/webapps/examples/jsp/jsp2/misc/
+apache-tomcat-8.5.34/webapps/examples/jsp/jsp2/simpletag/
+apache-tomcat-8.5.34/webapps/examples/jsp/jsp2/tagfiles/
+apache-tomcat-8.5.34/webapps/examples/jsp/jsptoserv/
+apache-tomcat-8.5.34/webapps/examples/jsp/num/
+apache-tomcat-8.5.34/webapps/examples/jsp/plugin/
+apache-tomcat-8.5.34/webapps/examples/jsp/plugin/applet/
+apache-tomcat-8.5.34/webapps/examples/jsp/security/
+apache-tomcat-8.5.34/webapps/examples/jsp/security/protected/
+apache-tomcat-8.5.34/webapps/examples/jsp/sessions/
+apache-tomcat-8.5.34/webapps/examples/jsp/simpletag/
+apache-tomcat-8.5.34/webapps/examples/jsp/snp/
+apache-tomcat-8.5.34/webapps/examples/jsp/tagplugin/
+apache-tomcat-8.5.34/webapps/examples/jsp/xml/
+apache-tomcat-8.5.34/webapps/examples/servlets/
+apache-tomcat-8.5.34/webapps/examples/servlets/images/
+apache-tomcat-8.5.34/webapps/examples/servlets/nonblocking/
+apache-tomcat-8.5.34/webapps/examples/websocket/
+apache-tomcat-8.5.34/webapps/host-manager/
+apache-tomcat-8.5.34/webapps/host-manager/META-INF/
+apache-tomcat-8.5.34/webapps/host-manager/WEB-INF/
+apache-tomcat-8.5.34/webapps/host-manager/WEB-INF/jsp/
+apache-tomcat-8.5.34/webapps/host-manager/images/
+apache-tomcat-8.5.34/webapps/manager/
+apache-tomcat-8.5.34/webapps/manager/META-INF/
+apache-tomcat-8.5.34/webapps/manager/WEB-INF/
+apache-tomcat-8.5.34/webapps/manager/WEB-INF/jsp/
+apache-tomcat-8.5.34/webapps/manager/images/
+apache-tomcat-8.5.34/work/
+apache-tomcat-8.5.34/BUILDING.txt
+apache-tomcat-8.5.34/CONTRIBUTING.md
+apache-tomcat-8.5.34/LICENSE
+apache-tomcat-8.5.34/NOTICE
+apache-tomcat-8.5.34/README.md
+apache-tomcat-8.5.34/RELEASE-NOTES
+apache-tomcat-8.5.34/RUNNING.txt
+apache-tomcat-8.5.34/bin/bootstrap.jar
+apache-tomcat-8.5.34/bin/catalina-tasks.xml
+apache-tomcat-8.5.34/bin/catalina.bat
+apache-tomcat-8.5.34/bin/commons-daemon-native.tar.gz
+apache-tomcat-8.5.34/bin/commons-daemon.jar
+apache-tomcat-8.5.34/bin/configtest.bat
+apache-tomcat-8.5.34/bin/digest.bat
+apache-tomcat-8.5.34/bin/setclasspath.bat
+apache-tomcat-8.5.34/bin/shutdown.bat
+apache-tomcat-8.5.34/bin/startup.bat
+apache-tomcat-8.5.34/bin/tomcat-juli.jar
+apache-tomcat-8.5.34/bin/tomcat-native.tar.gz
+apache-tomcat-8.5.34/bin/tool-wrapper.bat
+apache-tomcat-8.5.34/bin/version.bat
+apache-tomcat-8.5.34/lib/annotations-api.jar
+apache-tomcat-8.5.34/lib/catalina-ant.jar
+apache-tomcat-8.5.34/lib/catalina-ha.jar
+apache-tomcat-8.5.34/lib/catalina-storeconfig.jar
+apache-tomcat-8.5.34/lib/catalina-tribes.jar
+apache-tomcat-8.5.34/lib/catalina.jar
+apache-tomcat-8.5.34/lib/ecj-4.6.3.jar
+apache-tomcat-8.5.34/lib/el-api.jar
+apache-tomcat-8.5.34/lib/jasper-el.jar
+apache-tomcat-8.5.34/lib/jasper.jar
+apache-tomcat-8.5.34/lib/jaspic-api.jar
+apache-tomcat-8.5.34/lib/jsp-api.jar
+apache-tomcat-8.5.34/lib/servlet-api.jar
+apache-tomcat-8.5.34/lib/tomcat-api.jar
+apache-tomcat-8.5.34/lib/tomcat-coyote.jar
+apache-tomcat-8.5.34/lib/tomcat-dbcp.jar
+apache-tomcat-8.5.34/lib/tomcat-i18n-es.jar
+apache-tomcat-8.5.34/lib/tomcat-i18n-fr.jar
+apache-tomcat-8.5.34/lib/tomcat-i18n-ja.jar
+apache-tomcat-8.5.34/lib/tomcat-i18n-ru.jar
+apache-tomcat-8.5.34/lib/tomcat-jdbc.jar
+apache-tomcat-8.5.34/lib/tomcat-jni.jar
+apache-tomcat-8.5.34/lib/tomcat-util-scan.jar
+apache-tomcat-8.5.34/lib/tomcat-util.jar
+apache-tomcat-8.5.34/lib/tomcat-websocket.jar
+apache-tomcat-8.5.34/lib/websocket-api.jar
+apache-tomcat-8.5.34/temp/safeToDelete.tmp
+apache-tomcat-8.5.34/webapps/ROOT/RELEASE-NOTES.txt
+apache-tomcat-8.5.34/webapps/ROOT/WEB-INF/web.xml
+apache-tomcat-8.5.34/webapps/ROOT/asf-logo-wide.svg
+apache-tomcat-8.5.34/webapps/ROOT/bg-button.png
+apache-tomcat-8.5.34/webapps/ROOT/bg-middle.png
+apache-tomcat-8.5.34/webapps/ROOT/bg-nav-item.png
+apache-tomcat-8.5.34/webapps/ROOT/bg-nav.png
+apache-tomcat-8.5.34/webapps/ROOT/bg-upper.png
+apache-tomcat-8.5.34/webapps/ROOT/favicon.ico
+apache-tomcat-8.5.34/webapps/ROOT/index.jsp
+apache-tomcat-8.5.34/webapps/ROOT/tomcat-power.gif
+apache-tomcat-8.5.34/webapps/ROOT/tomcat.css
+apache-tomcat-8.5.34/webapps/ROOT/tomcat.gif
+apache-tomcat-8.5.34/webapps/ROOT/tomcat.png
+apache-tomcat-8.5.34/webapps/ROOT/tomcat.svg
+apache-tomcat-8.5.34/webapps/docs/BUILDING.txt
+apache-tomcat-8.5.34/webapps/docs/RELEASE-NOTES.txt
+apache-tomcat-8.5.34/webapps/docs/RUNNING.txt
+apache-tomcat-8.5.34/webapps/docs/WEB-INF/web.xml
+apache-tomcat-8.5.34/webapps/docs/aio.html
+apache-tomcat-8.5.34/webapps/docs/api/index.html
+apache-tomcat-8.5.34/webapps/docs/appdev/build.xml.txt
+apache-tomcat-8.5.34/webapps/docs/appdev/deployment.html
+apache-tomcat-8.5.34/webapps/docs/appdev/index.html
+apache-tomcat-8.5.34/webapps/docs/appdev/installation.html
+apache-tomcat-8.5.34/webapps/docs/appdev/introduction.html
+apache-tomcat-8.5.34/webapps/docs/appdev/processes.html
+apache-tomcat-8.5.34/webapps/docs/appdev/sample/build.xml
+apache-tomcat-8.5.34/webapps/docs/appdev/sample/docs/README.txt
+apache-tomcat-8.5.34/webapps/docs/appdev/sample/index.html
+apache-tomcat-8.5.34/webapps/docs/appdev/sample/sample.war
+apache-tomcat-8.5.34/webapps/docs/appdev/sample/src/mypackage/Hello.java
+apache-tomcat-8.5.34/webapps/docs/appdev/sample/web/WEB-INF/web.xml
+apache-tomcat-8.5.34/webapps/docs/appdev/sample/web/hello.jsp
+apache-tomcat-8.5.34/webapps/docs/appdev/sample/web/images/tomcat.gif
+apache-tomcat-8.5.34/webapps/docs/appdev/sample/web/index.html
+apache-tomcat-8.5.34/webapps/docs/appdev/source.html
+apache-tomcat-8.5.34/webapps/docs/appdev/web.xml.txt
+apache-tomcat-8.5.34/webapps/docs/apr.html
+apache-tomcat-8.5.34/webapps/docs/architecture/index.html
+apache-tomcat-8.5.34/webapps/docs/architecture/overview.html
+apache-tomcat-8.5.34/webapps/docs/architecture/requestProcess.html
+apache-tomcat-8.5.34/webapps/docs/architecture/requestProcess/authentication-process.png
+apache-tomcat-8.5.34/webapps/docs/architecture/requestProcess/request-process.png
+apache-tomcat-8.5.34/webapps/docs/architecture/startup.html
+apache-tomcat-8.5.34/webapps/docs/architecture/startup/serverStartup.pdf
+apache-tomcat-8.5.34/webapps/docs/architecture/startup/serverStartup.txt
+apache-tomcat-8.5.34/webapps/docs/balancer-howto.html
+apache-tomcat-8.5.34/webapps/docs/building.html
+apache-tomcat-8.5.34/webapps/docs/cgi-howto.html
+apache-tomcat-8.5.34/webapps/docs/changelog.html
+apache-tomcat-8.5.34/webapps/docs/class-loader-howto.html
+apache-tomcat-8.5.34/webapps/docs/cluster-howto.html
+apache-tomcat-8.5.34/webapps/docs/comments.html
+apache-tomcat-8.5.34/webapps/docs/config/ajp.html
+apache-tomcat-8.5.34/webapps/docs/config/automatic-deployment.html
+apache-tomcat-8.5.34/webapps/docs/config/cluster-channel.html
+apache-tomcat-8.5.34/webapps/docs/config/cluster-deployer.html
+apache-tomcat-8.5.34/webapps/docs/config/cluster-interceptor.html
+apache-tomcat-8.5.34/webapps/docs/config/cluster-listener.html
+apache-tomcat-8.5.34/webapps/docs/config/cluster-manager.html
+apache-tomcat-8.5.34/webapps/docs/config/cluster-membership.html
+apache-tomcat-8.5.34/webapps/docs/config/cluster-receiver.html
+apache-tomcat-8.5.34/webapps/docs/config/cluster-sender.html
+apache-tomcat-8.5.34/webapps/docs/config/cluster-valve.html
+apache-tomcat-8.5.34/webapps/docs/config/cluster.html
+apache-tomcat-8.5.34/webapps/docs/config/context.html
+apache-tomcat-8.5.34/webapps/docs/config/cookie-processor.html
+apache-tomcat-8.5.34/webapps/docs/config/credentialhandler.html
+apache-tomcat-8.5.34/webapps/docs/config/engine.html
+apache-tomcat-8.5.34/webapps/docs/config/executor.html
+apache-tomcat-8.5.34/webapps/docs/config/filter.html
+apache-tomcat-8.5.34/webapps/docs/config/globalresources.html
+apache-tomcat-8.5.34/webapps/docs/config/host.html
+apache-tomcat-8.5.34/webapps/docs/config/http.html
+apache-tomcat-8.5.34/webapps/docs/config/http2.html
+apache-tomcat-8.5.34/webapps/docs/config/index.html
+apache-tomcat-8.5.34/webapps/docs/config/jar-scan-filter.html
+apache-tomcat-8.5.34/webapps/docs/config/jar-scanner.html
+apache-tomcat-8.5.34/webapps/docs/config/jaspic.html
+apache-tomcat-8.5.34/webapps/docs/config/listeners.html
+apache-tomcat-8.5.34/webapps/docs/config/loader.html
+apache-tomcat-8.5.34/webapps/docs/config/manager.html
+apache-tomcat-8.5.34/webapps/docs/config/realm.html
+apache-tomcat-8.5.34/webapps/docs/config/resources.html
+apache-tomcat-8.5.34/webapps/docs/config/server.html
+apache-tomcat-8.5.34/webapps/docs/config/service.html
+apache-tomcat-8.5.34/webapps/docs/config/sessionidgenerator.html
+apache-tomcat-8.5.34/webapps/docs/config/systemprops.html
+apache-tomcat-8.5.34/webapps/docs/config/valve.html
+apache-tomcat-8.5.34/webapps/docs/connectors.html
+apache-tomcat-8.5.34/webapps/docs/default-servlet.html
+apache-tomcat-8.5.34/webapps/docs/deployer-howto.html
+apache-tomcat-8.5.34/webapps/docs/developers.html
+apache-tomcat-8.5.34/webapps/docs/elapi/index.html
+apache-tomcat-8.5.34/webapps/docs/extras.html
+apache-tomcat-8.5.34/webapps/docs/funcspecs/fs-admin-apps.html
+apache-tomcat-8.5.34/webapps/docs/funcspecs/fs-admin-objects.html
+apache-tomcat-8.5.34/webapps/docs/funcspecs/fs-admin-opers.html
+apache-tomcat-8.5.34/webapps/docs/funcspecs/fs-default.html
+apache-tomcat-8.5.34/webapps/docs/funcspecs/fs-jdbc-realm.html
+apache-tomcat-8.5.34/webapps/docs/funcspecs/fs-jndi-realm.html
+apache-tomcat-8.5.34/webapps/docs/funcspecs/fs-memory-realm.html
+apache-tomcat-8.5.34/webapps/docs/funcspecs/index.html
+apache-tomcat-8.5.34/webapps/docs/funcspecs/mbean-names.html
+apache-tomcat-8.5.34/webapps/docs/host-manager-howto.html
+apache-tomcat-8.5.34/webapps/docs/html-host-manager-howto.html
+apache-tomcat-8.5.34/webapps/docs/html-manager-howto.html
+apache-tomcat-8.5.34/webapps/docs/images/add.gif
+apache-tomcat-8.5.34/webapps/docs/images/asf-logo.svg
+apache-tomcat-8.5.34/webapps/docs/images/code.gif
+apache-tomcat-8.5.34/webapps/docs/images/cors-flowchart.png
+apache-tomcat-8.5.34/webapps/docs/images/design.gif
+apache-tomcat-8.5.34/webapps/docs/images/docs-stylesheet.css
+apache-tomcat-8.5.34/webapps/docs/images/docs.gif
+apache-tomcat-8.5.34/webapps/docs/images/fix.gif
+apache-tomcat-8.5.34/webapps/docs/images/fonts/OpenSans400.woff
+apache-tomcat-8.5.34/webapps/docs/images/fonts/OpenSans400italic.woff
+apache-tomcat-8.5.34/webapps/docs/images/fonts/OpenSans600.woff
+apache-tomcat-8.5.34/webapps/docs/images/fonts/OpenSans600italic.woff
+apache-tomcat-8.5.34/webapps/docs/images/fonts/OpenSans700.woff
+apache-tomcat-8.5.34/webapps/docs/images/fonts/OpenSans700italic.woff
+apache-tomcat-8.5.34/webapps/docs/images/fonts/fonts.css
+apache-tomcat-8.5.34/webapps/docs/images/printer.gif
+apache-tomcat-8.5.34/webapps/docs/images/tomcat.gif
+apache-tomcat-8.5.34/webapps/docs/images/tomcat.png
+apache-tomcat-8.5.34/webapps/docs/images/tomcat.svg
+apache-tomcat-8.5.34/webapps/docs/images/update.gif
+apache-tomcat-8.5.34/webapps/docs/images/void.gif
+apache-tomcat-8.5.34/webapps/docs/index.html
+apache-tomcat-8.5.34/webapps/docs/introduction.html
+apache-tomcat-8.5.34/webapps/docs/jasper-howto.html
+apache-tomcat-8.5.34/webapps/docs/jdbc-pool.html
+apache-tomcat-8.5.34/webapps/docs/jndi-datasource-examples-howto.html
+apache-tomcat-8.5.34/webapps/docs/jndi-resources-howto.html
+apache-tomcat-8.5.34/webapps/docs/jspapi/index.html
+apache-tomcat-8.5.34/webapps/docs/logging.html
+apache-tomcat-8.5.34/webapps/docs/manager-howto.html
+apache-tomcat-8.5.34/webapps/docs/maven-jars.html
+apache-tomcat-8.5.34/webapps/docs/mbeans-descriptors-howto.html
+apache-tomcat-8.5.34/webapps/docs/mbeans-descriptors.dtd
+apache-tomcat-8.5.34/webapps/docs/monitoring.html
+apache-tomcat-8.5.34/webapps/docs/proxy-howto.html
+apache-tomcat-8.5.34/webapps/docs/realm-howto.html
+apache-tomcat-8.5.34/webapps/docs/rewrite.html
+apache-tomcat-8.5.34/webapps/docs/security-howto.html
+apache-tomcat-8.5.34/webapps/docs/security-manager-howto.html
+apache-tomcat-8.5.34/webapps/docs/servletapi/index.html
+apache-tomcat-8.5.34/webapps/docs/setup.html
+apache-tomcat-8.5.34/webapps/docs/ssi-howto.html
+apache-tomcat-8.5.34/webapps/docs/ssl-howto.html
+apache-tomcat-8.5.34/webapps/docs/tribes/developers.html
+apache-tomcat-8.5.34/webapps/docs/tribes/faq.html
+apache-tomcat-8.5.34/webapps/docs/tribes/interceptors.html
+apache-tomcat-8.5.34/webapps/docs/tribes/introduction.html
+apache-tomcat-8.5.34/webapps/docs/tribes/membership.html
+apache-tomcat-8.5.34/webapps/docs/tribes/setup.html
+apache-tomcat-8.5.34/webapps/docs/tribes/status.html
+apache-tomcat-8.5.34/webapps/docs/tribes/transport.html
+apache-tomcat-8.5.34/webapps/docs/virtual-hosting-howto.html
+apache-tomcat-8.5.34/webapps/docs/web-socket-howto.html
+apache-tomcat-8.5.34/webapps/docs/websocketapi/index.html
+apache-tomcat-8.5.34/webapps/docs/windows-auth-howto.html
+apache-tomcat-8.5.34/webapps/docs/windows-service-howto.html
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/CookieExample.class
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/CookieExample.java
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/HelloWorldExample.class
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/HelloWorldExample.java
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/LocalStrings.properties
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/LocalStrings_en.properties
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/LocalStrings_es.properties
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/LocalStrings_fr.properties
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/LocalStrings_pt.properties
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/RequestHeaderExample.class
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/RequestHeaderExample.java
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/RequestInfoExample.class
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/RequestInfoExample.java
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/RequestParamExample.class
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/RequestParamExample.java
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/ServletToJsp.class
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/ServletToJsp.java
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/SessionExample.class
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/SessionExample.java
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/async/Async0$1.class
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/async/Async0.class
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/async/Async0.java
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/async/Async1$1.class
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/async/Async1.class
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/async/Async1.java
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/async/Async2$1.class
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/async/Async2.class
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/async/Async2.java
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/async/Async3.class
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/async/Async3.java
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/async/AsyncStockContextListener.class
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/async/AsyncStockContextListener.java
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/async/AsyncStockServlet.class
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/async/AsyncStockServlet.java
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/async/Stockticker$Stock.class
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/async/Stockticker$TickListener.class
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/async/Stockticker.class
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/async/Stockticker.java
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/cal/Entries.class
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/cal/Entries.java
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/cal/Entry.class
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/cal/Entry.java
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/cal/JspCalendar.class
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/cal/JspCalendar.java
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/cal/TableBean.class
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/cal/TableBean.java
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/checkbox/CheckTest.class
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/checkbox/CheckTest.java
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/colors/ColorGameBean.class
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/colors/ColorGameBean.java
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/compressionFilters/CompressionFilter.class
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/compressionFilters/CompressionFilter.java
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/compressionFilters/CompressionFilterTestServlet.class
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/compressionFilters/CompressionFilterTestServlet.java
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/compressionFilters/CompressionResponseStream.class
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/compressionFilters/CompressionResponseStream.java
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/compressionFilters/CompressionServletResponseWrapper.class
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/compressionFilters/CompressionServletResponseWrapper.java
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/dates/JspCalendar.class
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/dates/JspCalendar.java
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/error/Smart.class
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/error/Smart.java
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/examples/ExampleTagBase.class
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/examples/ExampleTagBase.java
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/examples/FooTag.class
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/examples/FooTag.java
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/examples/FooTagExtraInfo.class
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/examples/FooTagExtraInfo.java
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/examples/LogTag.class
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/examples/LogTag.java
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/examples/ShowSource.class
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/examples/ShowSource.java
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/examples/ValuesTag.class
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/examples/ValuesTag.java
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/filters/ExampleFilter.class
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/filters/ExampleFilter.java
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/jsp2/examples/BookBean.class
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/jsp2/examples/BookBean.java
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/jsp2/examples/FooBean.class
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/jsp2/examples/FooBean.java
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/jsp2/examples/ValuesBean.class
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/jsp2/examples/ValuesBean.java
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/jsp2/examples/el/Functions.class
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/jsp2/examples/el/Functions.java
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/jsp2/examples/simpletag/EchoAttributesTag.class
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/jsp2/examples/simpletag/EchoAttributesTag.java
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/jsp2/examples/simpletag/FindBookSimpleTag.class
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/jsp2/examples/simpletag/FindBookSimpleTag.java
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/jsp2/examples/simpletag/HelloWorldSimpleTag.class
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/jsp2/examples/simpletag/HelloWorldSimpleTag.java
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/jsp2/examples/simpletag/RepeatSimpleTag.class
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/jsp2/examples/simpletag/RepeatSimpleTag.java
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/jsp2/examples/simpletag/ShuffleSimpleTag.class
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/jsp2/examples/simpletag/ShuffleSimpleTag.java
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/jsp2/examples/simpletag/TileSimpleTag.class
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/jsp2/examples/simpletag/TileSimpleTag.java
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/listeners/ContextListener.class
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/listeners/ContextListener.java
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/listeners/SessionListener.class
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/listeners/SessionListener.java
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/nonblocking/ByteCounter$1.class
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/nonblocking/ByteCounter$CounterListener.class
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/nonblocking/ByteCounter.class
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/nonblocking/ByteCounter.java
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/nonblocking/NumberWriter$1.class
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/nonblocking/NumberWriter$NumberWriterListener.class
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/nonblocking/NumberWriter.class
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/nonblocking/NumberWriter.java
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/num/NumberGuessBean.class
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/num/NumberGuessBean.java
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/sessions/DummyCart.class
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/sessions/DummyCart.java
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/util/CookieFilter.class
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/util/CookieFilter.java
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/util/HTMLFilter.class
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/util/HTMLFilter.java
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/validators/DebugValidator.class
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/validators/DebugValidator.java
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/websocket/ExamplesConfig.class
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/websocket/ExamplesConfig.java
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/websocket/chat/ChatAnnotation.class
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/websocket/chat/ChatAnnotation.java
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/websocket/drawboard/Client$1.class
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/websocket/drawboard/Client.class
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/websocket/drawboard/Client.java
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/websocket/drawboard/DrawMessage$ParseException.class
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/websocket/drawboard/DrawMessage.class
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/websocket/drawboard/DrawMessage.java
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/websocket/drawboard/DrawboardContextListener.class
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/websocket/drawboard/DrawboardContextListener.java
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/websocket/drawboard/DrawboardEndpoint$1.class
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/websocket/drawboard/DrawboardEndpoint$2.class
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/websocket/drawboard/DrawboardEndpoint$3$1.class
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/websocket/drawboard/DrawboardEndpoint$3.class
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/websocket/drawboard/DrawboardEndpoint.class
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/websocket/drawboard/DrawboardEndpoint.java
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/websocket/drawboard/Room$1$1.class
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/websocket/drawboard/Room$1.class
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/websocket/drawboard/Room$2.class
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/websocket/drawboard/Room$MessageType.class
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/websocket/drawboard/Room$Player.class
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/websocket/drawboard/Room.class
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/websocket/drawboard/Room.java
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/websocket/drawboard/wsmessages/AbstractWebsocketMessage.class
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/websocket/drawboard/wsmessages/AbstractWebsocketMessage.java
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/websocket/drawboard/wsmessages/BinaryWebsocketMessage.class
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/websocket/drawboard/wsmessages/BinaryWebsocketMessage.java
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/websocket/drawboard/wsmessages/CloseWebsocketMessage.class
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/websocket/drawboard/wsmessages/CloseWebsocketMessage.java
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/websocket/drawboard/wsmessages/StringWebsocketMessage.class
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/websocket/drawboard/wsmessages/StringWebsocketMessage.java
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/websocket/echo/EchoAnnotation.class
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/websocket/echo/EchoAnnotation.java
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/websocket/echo/EchoAsyncAnnotation$1.class
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/websocket/echo/EchoAsyncAnnotation$CompletedFuture.class
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/websocket/echo/EchoAsyncAnnotation.class
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/websocket/echo/EchoAsyncAnnotation.java
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/websocket/echo/EchoEndpoint$1.class
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/websocket/echo/EchoEndpoint$EchoMessageHandlerBinary.class
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/websocket/echo/EchoEndpoint$EchoMessageHandlerText.class
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/websocket/echo/EchoEndpoint.class
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/websocket/echo/EchoEndpoint.java
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/websocket/echo/EchoStreamAnnotation.class
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/websocket/echo/EchoStreamAnnotation.java
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/websocket/echo/servers.json
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/websocket/snake/Direction.class
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/websocket/snake/Direction.java
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/websocket/snake/Location$1.class
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/websocket/snake/Location.class
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/websocket/snake/Location.java
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/websocket/snake/Snake.class
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/websocket/snake/Snake.java
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/websocket/snake/SnakeAnnotation.class
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/websocket/snake/SnakeAnnotation.java
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/websocket/snake/SnakeTimer$1.class
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/websocket/snake/SnakeTimer.class
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/classes/websocket/snake/SnakeTimer.java
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/jsp2/jsp2-example-taglib.tld
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/jsp/applet/Clock2.java
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/jsp/debug-taglib.tld
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/jsp/example-taglib.tld
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/lib/taglibs-standard-impl-1.2.5.jar
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/lib/taglibs-standard-spec-1.2.5.jar
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/tags/displayProducts.tag
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/tags/helloWorld.tag
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/tags/panel.tag
+apache-tomcat-8.5.34/webapps/examples/WEB-INF/web.xml
+apache-tomcat-8.5.34/webapps/examples/index.html
+apache-tomcat-8.5.34/webapps/examples/jsp/async/async1.jsp
+apache-tomcat-8.5.34/webapps/examples/jsp/async/async1.jsp.html
+apache-tomcat-8.5.34/webapps/examples/jsp/async/async3.jsp
+apache-tomcat-8.5.34/webapps/examples/jsp/async/async3.jsp.html
+apache-tomcat-8.5.34/webapps/examples/jsp/async/index.jsp
+apache-tomcat-8.5.34/webapps/examples/jsp/async/index.jsp.html
+apache-tomcat-8.5.34/webapps/examples/jsp/cal/Entries.java.html
+apache-tomcat-8.5.34/webapps/examples/jsp/cal/Entry.java.html
+apache-tomcat-8.5.34/webapps/examples/jsp/cal/JspCalendar.java.html
+apache-tomcat-8.5.34/webapps/examples/jsp/cal/TableBean.java.html
+apache-tomcat-8.5.34/webapps/examples/jsp/cal/cal1.jsp
+apache-tomcat-8.5.34/webapps/examples/jsp/cal/cal1.jsp.html
+apache-tomcat-8.5.34/webapps/examples/jsp/cal/cal2.jsp
+apache-tomcat-8.5.34/webapps/examples/jsp/cal/cal2.jsp.html
+apache-tomcat-8.5.34/webapps/examples/jsp/cal/calendar.html
+apache-tomcat-8.5.34/webapps/examples/jsp/cal/login.html
+apache-tomcat-8.5.34/webapps/examples/jsp/checkbox/CheckTest.html
+apache-tomcat-8.5.34/webapps/examples/jsp/checkbox/check.html
+apache-tomcat-8.5.34/webapps/examples/jsp/checkbox/checkresult.jsp
+apache-tomcat-8.5.34/webapps/examples/jsp/checkbox/checkresult.jsp.html
+apache-tomcat-8.5.34/webapps/examples/jsp/checkbox/cresult.html
+apache-tomcat-8.5.34/webapps/examples/jsp/colors/ColorGameBean.html
+apache-tomcat-8.5.34/webapps/examples/jsp/colors/clr.html
+apache-tomcat-8.5.34/webapps/examples/jsp/colors/colors.html
+apache-tomcat-8.5.34/webapps/examples/jsp/colors/colrs.jsp
+apache-tomcat-8.5.34/webapps/examples/jsp/colors/colrs.jsp.html
+apache-tomcat-8.5.34/webapps/examples/jsp/dates/date.html
+apache-tomcat-8.5.34/webapps/examples/jsp/dates/date.jsp
+apache-tomcat-8.5.34/webapps/examples/jsp/dates/date.jsp.html
+apache-tomcat-8.5.34/webapps/examples/jsp/error/er.html
+apache-tomcat-8.5.34/webapps/examples/jsp/error/err.jsp
+apache-tomcat-8.5.34/webapps/examples/jsp/error/err.jsp.html
+apache-tomcat-8.5.34/webapps/examples/jsp/error/error.html
+apache-tomcat-8.5.34/webapps/examples/jsp/error/errorpge.jsp
+apache-tomcat-8.5.34/webapps/examples/jsp/error/errorpge.jsp.html
+apache-tomcat-8.5.34/webapps/examples/jsp/forward/forward.jsp
+apache-tomcat-8.5.34/webapps/examples/jsp/forward/forward.jsp.html
+apache-tomcat-8.5.34/webapps/examples/jsp/forward/fwd.html
+apache-tomcat-8.5.34/webapps/examples/jsp/forward/one.jsp
+apache-tomcat-8.5.34/webapps/examples/jsp/forward/one.jsp.html
+apache-tomcat-8.5.34/webapps/examples/jsp/forward/two.html
+apache-tomcat-8.5.34/webapps/examples/jsp/images/code.gif
+apache-tomcat-8.5.34/webapps/examples/jsp/images/execute.gif
+apache-tomcat-8.5.34/webapps/examples/jsp/images/read.gif
+apache-tomcat-8.5.34/webapps/examples/jsp/images/return.gif
+apache-tomcat-8.5.34/webapps/examples/jsp/include/foo.html
+apache-tomcat-8.5.34/webapps/examples/jsp/include/foo.jsp
+apache-tomcat-8.5.34/webapps/examples/jsp/include/foo.jsp.html
+apache-tomcat-8.5.34/webapps/examples/jsp/include/inc.html
+apache-tomcat-8.5.34/webapps/examples/jsp/include/include.jsp
+apache-tomcat-8.5.34/webapps/examples/jsp/include/include.jsp.html
+apache-tomcat-8.5.34/webapps/examples/jsp/index.html
+apache-tomcat-8.5.34/webapps/examples/jsp/jsp2/el/Functions.java.html
+apache-tomcat-8.5.34/webapps/examples/jsp/jsp2/el/ValuesBean.java.html
+apache-tomcat-8.5.34/webapps/examples/jsp/jsp2/el/ValuesTag.java.html
+apache-tomcat-8.5.34/webapps/examples/jsp/jsp2/el/basic-arithmetic.html
+apache-tomcat-8.5.34/webapps/examples/jsp/jsp2/el/basic-arithmetic.jsp
+apache-tomcat-8.5.34/webapps/examples/jsp/jsp2/el/basic-arithmetic.jsp.html
+apache-tomcat-8.5.34/webapps/examples/jsp/jsp2/el/basic-comparisons.html
+apache-tomcat-8.5.34/webapps/examples/jsp/jsp2/el/basic-comparisons.jsp
+apache-tomcat-8.5.34/webapps/examples/jsp/jsp2/el/basic-comparisons.jsp.html
+apache-tomcat-8.5.34/webapps/examples/jsp/jsp2/el/composite.html
+apache-tomcat-8.5.34/webapps/examples/jsp/jsp2/el/composite.jsp
+apache-tomcat-8.5.34/webapps/examples/jsp/jsp2/el/composite.jsp.html
+apache-tomcat-8.5.34/webapps/examples/jsp/jsp2/el/functions.html
+apache-tomcat-8.5.34/webapps/examples/jsp/jsp2/el/functions.jsp
+apache-tomcat-8.5.34/webapps/examples/jsp/jsp2/el/functions.jsp.html
+apache-tomcat-8.5.34/webapps/examples/jsp/jsp2/el/implicit-objects.html
+apache-tomcat-8.5.34/webapps/examples/jsp/jsp2/el/implicit-objects.jsp
+apache-tomcat-8.5.34/webapps/examples/jsp/jsp2/el/implicit-objects.jsp.html
+apache-tomcat-8.5.34/webapps/examples/jsp/jsp2/jspattribute/FooBean.java.html
+apache-tomcat-8.5.34/webapps/examples/jsp/jsp2/jspattribute/HelloWorldSimpleTag.java.html
+apache-tomcat-8.5.34/webapps/examples/jsp/jsp2/jspattribute/ShuffleSimpleTag.java.html
+apache-tomcat-8.5.34/webapps/examples/jsp/jsp2/jspattribute/TileSimpleTag.java.html
+apache-tomcat-8.5.34/webapps/examples/jsp/jsp2/jspattribute/jspattribute.html
+apache-tomcat-8.5.34/webapps/examples/jsp/jsp2/jspattribute/jspattribute.jsp
+apache-tomcat-8.5.34/webapps/examples/jsp/jsp2/jspattribute/jspattribute.jsp.html
+apache-tomcat-8.5.34/webapps/examples/jsp/jsp2/jspattribute/shuffle.html
+apache-tomcat-8.5.34/webapps/examples/jsp/jsp2/jspattribute/shuffle.jsp
+apache-tomcat-8.5.34/webapps/examples/jsp/jsp2/jspattribute/shuffle.jsp.html
+apache-tomcat-8.5.34/webapps/examples/jsp/jsp2/jspx/basic.html
+apache-tomcat-8.5.34/webapps/examples/jsp/jsp2/jspx/basic.jspx
+apache-tomcat-8.5.34/webapps/examples/jsp/jsp2/jspx/basic.jspx.html
+apache-tomcat-8.5.34/webapps/examples/jsp/jsp2/jspx/svgexample.html
+apache-tomcat-8.5.34/webapps/examples/jsp/jsp2/jspx/textRotate.html
+apache-tomcat-8.5.34/webapps/examples/jsp/jsp2/jspx/textRotate.jpg
+apache-tomcat-8.5.34/webapps/examples/jsp/jsp2/jspx/textRotate.jspx
+apache-tomcat-8.5.34/webapps/examples/jsp/jsp2/jspx/textRotate.jspx.html
+apache-tomcat-8.5.34/webapps/examples/jsp/jsp2/misc/EchoAttributesTag.java.html
+apache-tomcat-8.5.34/webapps/examples/jsp/jsp2/misc/coda.jspf
+apache-tomcat-8.5.34/webapps/examples/jsp/jsp2/misc/coda.jspf.html
+apache-tomcat-8.5.34/webapps/examples/jsp/jsp2/misc/config.html
+apache-tomcat-8.5.34/webapps/examples/jsp/jsp2/misc/config.jsp
+apache-tomcat-8.5.34/webapps/examples/jsp/jsp2/misc/config.jsp.html
+apache-tomcat-8.5.34/webapps/examples/jsp/jsp2/misc/dynamicattrs.html
+apache-tomcat-8.5.34/webapps/examples/jsp/jsp2/misc/dynamicattrs.jsp
+apache-tomcat-8.5.34/webapps/examples/jsp/jsp2/misc/dynamicattrs.jsp.html
+apache-tomcat-8.5.34/webapps/examples/jsp/jsp2/misc/prelude.jspf
+apache-tomcat-8.5.34/webapps/examples/jsp/jsp2/misc/prelude.jspf.html
+apache-tomcat-8.5.34/webapps/examples/jsp/jsp2/simpletag/BookBean.java.html
+apache-tomcat-8.5.34/webapps/examples/jsp/jsp2/simpletag/FindBookSimpleTag.java.html
+apache-tomcat-8.5.34/webapps/examples/jsp/jsp2/simpletag/Functions.java.html
+apache-tomcat-8.5.34/webapps/examples/jsp/jsp2/simpletag/HelloWorldSimpleTag.java.html
+apache-tomcat-8.5.34/webapps/examples/jsp/jsp2/simpletag/RepeatSimpleTag.java.html
+apache-tomcat-8.5.34/webapps/examples/jsp/jsp2/simpletag/book.html
+apache-tomcat-8.5.34/webapps/examples/jsp/jsp2/simpletag/book.jsp
+apache-tomcat-8.5.34/webapps/examples/jsp/jsp2/simpletag/book.jsp.html
+apache-tomcat-8.5.34/webapps/examples/jsp/jsp2/simpletag/hello.html
+apache-tomcat-8.5.34/webapps/examples/jsp/jsp2/simpletag/hello.jsp
+apache-tomcat-8.5.34/webapps/examples/jsp/jsp2/simpletag/hello.jsp.html
+apache-tomcat-8.5.34/webapps/examples/jsp/jsp2/simpletag/repeat.html
+apache-tomcat-8.5.34/webapps/examples/jsp/jsp2/simpletag/repeat.jsp
+apache-tomcat-8.5.34/webapps/examples/jsp/jsp2/simpletag/repeat.jsp.html
+apache-tomcat-8.5.34/webapps/examples/jsp/jsp2/tagfiles/displayProducts.tag.html
+apache-tomcat-8.5.34/webapps/examples/jsp/jsp2/tagfiles/hello.html
+apache-tomcat-8.5.34/webapps/examples/jsp/jsp2/tagfiles/hello.jsp
+apache-tomcat-8.5.34/webapps/examples/jsp/jsp2/tagfiles/hello.jsp.html
+apache-tomcat-8.5.34/webapps/examples/jsp/jsp2/tagfiles/helloWorld.tag.html
+apache-tomcat-8.5.34/webapps/examples/jsp/jsp2/tagfiles/panel.html
+apache-tomcat-8.5.34/webapps/examples/jsp/jsp2/tagfiles/panel.jsp
+apache-tomcat-8.5.34/webapps/examples/jsp/jsp2/tagfiles/panel.jsp.html
+apache-tomcat-8.5.34/webapps/examples/jsp/jsp2/tagfiles/panel.tag.html
+apache-tomcat-8.5.34/webapps/examples/jsp/jsp2/tagfiles/products.html
+apache-tomcat-8.5.34/webapps/examples/jsp/jsp2/tagfiles/products.jsp
+apache-tomcat-8.5.34/webapps/examples/jsp/jsp2/tagfiles/products.jsp.html
+apache-tomcat-8.5.34/webapps/examples/jsp/jsptoserv/ServletToJsp.java.html
+apache-tomcat-8.5.34/webapps/examples/jsp/jsptoserv/hello.jsp
+apache-tomcat-8.5.34/webapps/examples/jsp/jsptoserv/hello.jsp.html
+apache-tomcat-8.5.34/webapps/examples/jsp/jsptoserv/jsptoservlet.jsp
+apache-tomcat-8.5.34/webapps/examples/jsp/jsptoserv/jsptoservlet.jsp.html
+apache-tomcat-8.5.34/webapps/examples/jsp/jsptoserv/jts.html
+apache-tomcat-8.5.34/webapps/examples/jsp/num/numguess.html
+apache-tomcat-8.5.34/webapps/examples/jsp/num/numguess.jsp
+apache-tomcat-8.5.34/webapps/examples/jsp/num/numguess.jsp.html
+apache-tomcat-8.5.34/webapps/examples/jsp/plugin/applet/Clock2.class
+apache-tomcat-8.5.34/webapps/examples/jsp/plugin/applet/Clock2.java
+apache-tomcat-8.5.34/webapps/examples/jsp/plugin/plugin.html
+apache-tomcat-8.5.34/webapps/examples/jsp/plugin/plugin.jsp
+apache-tomcat-8.5.34/webapps/examples/jsp/plugin/plugin.jsp.html
+apache-tomcat-8.5.34/webapps/examples/jsp/security/protected/error.jsp
+apache-tomcat-8.5.34/webapps/examples/jsp/security/protected/error.jsp.html
+apache-tomcat-8.5.34/webapps/examples/jsp/security/protected/index.jsp
+apache-tomcat-8.5.34/webapps/examples/jsp/security/protected/index.jsp.html
+apache-tomcat-8.5.34/webapps/examples/jsp/security/protected/login.jsp
+apache-tomcat-8.5.34/webapps/examples/jsp/security/protected/login.jsp.html
+apache-tomcat-8.5.34/webapps/examples/jsp/sessions/DummyCart.html
+apache-tomcat-8.5.34/webapps/examples/jsp/sessions/carts.html
+apache-tomcat-8.5.34/webapps/examples/jsp/sessions/carts.jsp
+apache-tomcat-8.5.34/webapps/examples/jsp/sessions/carts.jsp.html
+apache-tomcat-8.5.34/webapps/examples/jsp/sessions/crt.html
+apache-tomcat-8.5.34/webapps/examples/jsp/simpletag/foo.html
+apache-tomcat-8.5.34/webapps/examples/jsp/simpletag/foo.jsp
+apache-tomcat-8.5.34/webapps/examples/jsp/simpletag/foo.jsp.html
+apache-tomcat-8.5.34/webapps/examples/jsp/snp/snoop.html
+apache-tomcat-8.5.34/webapps/examples/jsp/snp/snoop.jsp
+apache-tomcat-8.5.34/webapps/examples/jsp/snp/snoop.jsp.html
+apache-tomcat-8.5.34/webapps/examples/jsp/source.jsp
+apache-tomcat-8.5.34/webapps/examples/jsp/source.jsp.html
+apache-tomcat-8.5.34/webapps/examples/jsp/tagplugin/choose.html
+apache-tomcat-8.5.34/webapps/examples/jsp/tagplugin/choose.jsp
+apache-tomcat-8.5.34/webapps/examples/jsp/tagplugin/choose.jsp.html
+apache-tomcat-8.5.34/webapps/examples/jsp/tagplugin/foreach.html
+apache-tomcat-8.5.34/webapps/examples/jsp/tagplugin/foreach.jsp
+apache-tomcat-8.5.34/webapps/examples/jsp/tagplugin/foreach.jsp.html
+apache-tomcat-8.5.34/webapps/examples/jsp/tagplugin/howto.html
+apache-tomcat-8.5.34/webapps/examples/jsp/tagplugin/if.html
+apache-tomcat-8.5.34/webapps/examples/jsp/tagplugin/if.jsp
+apache-tomcat-8.5.34/webapps/examples/jsp/tagplugin/if.jsp.html
+apache-tomcat-8.5.34/webapps/examples/jsp/tagplugin/notes.html
+apache-tomcat-8.5.34/webapps/examples/jsp/xml/xml.html
+apache-tomcat-8.5.34/webapps/examples/jsp/xml/xml.jsp
+apache-tomcat-8.5.34/webapps/examples/jsp/xml/xml.jsp.html
+apache-tomcat-8.5.34/webapps/examples/servlets/cookies.html
+apache-tomcat-8.5.34/webapps/examples/servlets/helloworld.html
+apache-tomcat-8.5.34/webapps/examples/servlets/images/code.gif
+apache-tomcat-8.5.34/webapps/examples/servlets/images/execute.gif
+apache-tomcat-8.5.34/webapps/examples/servlets/images/return.gif
+apache-tomcat-8.5.34/webapps/examples/servlets/index.html
+apache-tomcat-8.5.34/webapps/examples/servlets/nonblocking/bytecounter.html
+apache-tomcat-8.5.34/webapps/examples/servlets/reqheaders.html
+apache-tomcat-8.5.34/webapps/examples/servlets/reqinfo.html
+apache-tomcat-8.5.34/webapps/examples/servlets/reqparams.html
+apache-tomcat-8.5.34/webapps/examples/servlets/sessions.html
+apache-tomcat-8.5.34/webapps/examples/websocket/chat.xhtml
+apache-tomcat-8.5.34/webapps/examples/websocket/drawboard.xhtml
+apache-tomcat-8.5.34/webapps/examples/websocket/echo.xhtml
+apache-tomcat-8.5.34/webapps/examples/websocket/index.xhtml
+apache-tomcat-8.5.34/webapps/examples/websocket/snake.xhtml
+apache-tomcat-8.5.34/webapps/host-manager/META-INF/context.xml
+apache-tomcat-8.5.34/webapps/host-manager/WEB-INF/jsp/401.jsp
+apache-tomcat-8.5.34/webapps/host-manager/WEB-INF/jsp/403.jsp
+apache-tomcat-8.5.34/webapps/host-manager/WEB-INF/jsp/404.jsp
+apache-tomcat-8.5.34/webapps/host-manager/WEB-INF/web.xml
+apache-tomcat-8.5.34/webapps/host-manager/images/add.gif
+apache-tomcat-8.5.34/webapps/host-manager/images/asf-logo.svg
+apache-tomcat-8.5.34/webapps/host-manager/images/code.gif
+apache-tomcat-8.5.34/webapps/host-manager/images/design.gif
+apache-tomcat-8.5.34/webapps/host-manager/images/docs.gif
+apache-tomcat-8.5.34/webapps/host-manager/images/fix.gif
+apache-tomcat-8.5.34/webapps/host-manager/images/tomcat.gif
+apache-tomcat-8.5.34/webapps/host-manager/images/update.gif
+apache-tomcat-8.5.34/webapps/host-manager/images/void.gif
+apache-tomcat-8.5.34/webapps/host-manager/index.jsp
+apache-tomcat-8.5.34/webapps/host-manager/manager.xml
+apache-tomcat-8.5.34/webapps/manager/META-INF/context.xml
+apache-tomcat-8.5.34/webapps/manager/WEB-INF/jsp/401.jsp
+apache-tomcat-8.5.34/webapps/manager/WEB-INF/jsp/403.jsp
+apache-tomcat-8.5.34/webapps/manager/WEB-INF/jsp/404.jsp
+apache-tomcat-8.5.34/webapps/manager/WEB-INF/jsp/connectorCerts.jsp
+apache-tomcat-8.5.34/webapps/manager/WEB-INF/jsp/connectorCiphers.jsp
+apache-tomcat-8.5.34/webapps/manager/WEB-INF/jsp/connectorTrustedCerts.jsp
+apache-tomcat-8.5.34/webapps/manager/WEB-INF/jsp/sessionDetail.jsp
+apache-tomcat-8.5.34/webapps/manager/WEB-INF/jsp/sessionsList.jsp
+apache-tomcat-8.5.34/webapps/manager/WEB-INF/web.xml
+apache-tomcat-8.5.34/webapps/manager/images/add.gif
+apache-tomcat-8.5.34/webapps/manager/images/asf-logo.svg
+apache-tomcat-8.5.34/webapps/manager/images/code.gif
+apache-tomcat-8.5.34/webapps/manager/images/design.gif
+apache-tomcat-8.5.34/webapps/manager/images/docs.gif
+apache-tomcat-8.5.34/webapps/manager/images/fix.gif
+apache-tomcat-8.5.34/webapps/manager/images/tomcat.gif
+apache-tomcat-8.5.34/webapps/manager/images/update.gif
+apache-tomcat-8.5.34/webapps/manager/images/void.gif
+apache-tomcat-8.5.34/webapps/manager/index.jsp
+apache-tomcat-8.5.34/webapps/manager/status.xsd
+apache-tomcat-8.5.34/webapps/manager/xform.xsl
+apache-tomcat-8.5.34/bin/catalina.sh
+apache-tomcat-8.5.34/bin/configtest.sh
+apache-tomcat-8.5.34/bin/daemon.sh
+apache-tomcat-8.5.34/bin/digest.sh
+apache-tomcat-8.5.34/bin/setclasspath.sh
+apache-tomcat-8.5.34/bin/shutdown.sh
+apache-tomcat-8.5.34/bin/startup.sh
+apache-tomcat-8.5.34/bin/tool-wrapper.sh
+apache-tomcat-8.5.34/bin/version.sh
+root@mgmt:~# cd /opt/tomcat
+root@mgmt:/opt/tomcat# sudo chgrp -R tomcat conf
+root@mgmt:/opt/tomcat# sudo chmod g+rwx conf
+root@mgmt:/opt/tomcat# sudo chmod g+r conf/*
+root@mgmt:/opt/tomcat# sudo chown -R tomcat work/ temp/ logs/
+root@mgmt:/opt/tomcat# sudo update-alternatives --config java
+There is only one alternative in link group java (providing /usr/bin/java): /usr/lib/jvm/java-7-openjdk-amd64/jre/bin/java
+Nothing to configure.
+root@mgmt:/opt/tomcat# sudo vim /etc/init/tomcat.conf
+root@mgmt:/opt/tomcat# sudo initctl reload-configuration
+root@mgmt:/opt/tomcat/bin# $CATALINA_HOME/bin/startup.sh
+root@mgmt:/opt/tomcat/bin# bash startup.sh
+Using CATALINA_BASE:   /opt/tomcat
+Using CATALINA_HOME:   /opt/tomcat
+Using CATALINA_TMPDIR: /opt/tomcat/temp
+Using JRE_HOME:        /usr
+Using CLASSPATH:       /opt/tomcat/bin/bootstrap.jar:/opt/tomcat/bin/tomcat-juli                                                                                        .jar
+Tomcat started.
+
+
+
