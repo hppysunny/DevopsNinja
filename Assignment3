@@ -1,0 +1,334 @@
+root@mgmt:/home/vagrant# cat > argument.sh
+#!/bin/bash
+ echo $1, $5
+ if [ $2 -eq 10 ]
+  then
+    echo "INDIA"
+  else
+     echo "india"
+ fi
+
+ for i do
+    sum=$(expr $sum + $i)
+  done
+    echo the sum of arguments is $sum
+root@mgmt:/home/vagrant# ./argument.sh 7 4 3 10 14
+7, 14
+india
+the sum of arguments is 38
+Make a script and pass one command line arguments(use loop)
+•	print the table of command line argument if value is less 10
+•	print 5 times "INDIA" if value is greater than or equal to 10
+
+
+#!bin/bash
+
+ if [ $1 -le 9 ]
+    then
+        for i in 1 2 3 4 5 6 7 8 9 10
+        do
+         a=$( expr $1 '*' $i)
+        echo $a
+        done
+        elif [ $1 -ge 10 ]
+        then
+        for i in 1 2 3 4 5
+        do
+        echo "INDIA"
+        done
+ fi
+~
+~
+
+root@mgmt:/home/vagrant# bash argument.sh 11
+INDIA
+INDIA
+INDIA
+INDIA
+INDIA
+
+root@mgmt:/home/vagrant# bash argument.sh 8
+8
+16
+24
+32
+40
+48
+56
+64
+72
+80
+
+Make a script and print your name 10 times(use fuction to print your name)
+root@mgmt:/home/vagrant# cat > printname.sh
+#!bib/bash
+printname ()
+        {
+     for in in {1..10}
+        do
+          echo $1
+        done
+        }
+ printname $1
+
+root@mgmt:/home/vagrant# bash printname.sh sanjay
+sanjay
+sanjay
+sanjay
+sanjay
+sanjay
+sanjay
+sanjay
+sanjay
+sanjay
+sanjay
+
+
+
+Make an excel sheet manually with 5 columns, and print the 1st,3rd and 5th column
+root@mgmt:/home/vagrant# cat excel.csv
+1  sanjay   IGNOU  2012  65%
+2  yasar    DU     2011  63%
+3  ankush   DU     2010  60%
+4  manmeet  DU     2012  89%
+5  dilpree  DU     2011  73%
+root@mgmt:/home/vagrant# awk '{print $1, $3, $5}' excel.csv
+1 IGNOU 65%
+2 DU 63%
+3 DU 60%
+4 DU 89%
+5 DU 73%
+root@mgmt:/home/vagrant#
+Install the Zabbix-agent using shell script
+•	Set Hostname value in Zabbix agent configuration file with - Hostname=192.168.22.10-zabbixagent
+•	Set Server=zabbix.opstree.com in Zabbix agent configuration
+root@mgmt:/home/vagrant# vim zabbixinstall.sh
+#!/bin/bash
+        sudo apt-get update
+        sudo apt-get install zabbix-agent -y
+        sudo service zabbix-agent reload
+        sudo sed -i 's/Server=127.0.0.1/Server=zabbix.opstree.com/' /etc/zabbix/zabbix_agentd.conf
+        echo file changed
+        sudo sed -i 's/Hostname=Zabbix/Hostname=192.168.22.10-zabbixagent/' /etc/zabbix/zabbix_agentd.conf
+        echo file changed
+        sudo service zabbix-agent restart
+root@mgmt:/home/vagrant# ./zabbixinstall.sh
+Hit http://ppa.launchpad.net trusty InRelease
+Ign http://archive.ubuntu.com trusty InRelease
+Get:1 http://archive.ubuntu.com trusty-updates InRelease [65.9 kB]
+Hit http://ppa.launchpad.net trusty/main amd64 Packages
+Get:2 http://security.ubuntu.com trusty-security InRelease [65.9 kB]
+Hit http://ppa.launchpad.net trusty/main Translation-en
+Hit http://archive.ubuntu.com trusty-backports InRelease
+Hit http://archive.ubuntu.com trusty Release.gpg
+Get:3 http://archive.ubuntu.com trusty-updates/main Sources [422 kB]
+Get:4 http://security.ubuntu.com trusty-security/main Sources [162 kB]
+Get:5 http://security.ubuntu.com trusty-security/universe Sources [82.9 kB]
+Get:6 http://archive.ubuntu.com trusty-updates/restricted Sources [6,322 B]
+Get:7 http://archive.ubuntu.com trusty-updates/universe Sources [211 kB]
+Get:8 http://security.ubuntu.com trusty-security/main amd64 Packages [766 kB]
+Get:9 http://archive.ubuntu.com trusty-updates/multiverse Sources [7,435 B]
+Get:10 http://archive.ubuntu.com trusty-updates/main amd64 Packages [1,104 kB]
+Get:11 http://security.ubuntu.com trusty-security/universe amd64 Packages [255 kB]
+Get:12 http://archive.ubuntu.com trusty-updates/restricted amd64 Packages [17.2 kB]
+Get:13 http://archive.ubuntu.com trusty-updates/universe amd64 Packages [484 kB]
+Get:14 http://security.ubuntu.com trusty-security/main Translation-en [413 kB]
+Get:15 http://archive.ubuntu.com trusty-updates/multiverse amd64 Packages [14.6 kB]
+Get:16 http://archive.ubuntu.com trusty-updates/main Translation-en [549 kB]
+Get:17 http://security.ubuntu.com trusty-security/universe Translation-en [138 kB]
+Get:18 http://archive.ubuntu.com trusty-updates/multiverse Translation-en [7,616 B]
+Get:19 http://archive.ubuntu.com trusty-updates/restricted Translation-en [4,021 B]
+Get:20 http://archive.ubuntu.com trusty-updates/universe Translation-en [258 kB]
+Hit http://archive.ubuntu.com trusty-backports/main Sources
+Hit http://archive.ubuntu.com trusty-backports/restricted Sources
+Hit http://archive.ubuntu.com trusty-backports/universe Sources
+Hit http://archive.ubuntu.com trusty-backports/multiverse Sources
+Hit http://archive.ubuntu.com trusty-backports/main amd64 Packages
+Hit http://archive.ubuntu.com trusty-backports/restricted amd64 Packages
+Hit http://archive.ubuntu.com trusty-backports/universe amd64 Packages
+Hit http://archive.ubuntu.com trusty-backports/multiverse amd64 Packages
+Hit http://archive.ubuntu.com trusty-backports/main Translation-en
+Hit http://archive.ubuntu.com trusty-backports/multiverse Translation-en
+Hit http://archive.ubuntu.com trusty-backports/restricted Translation-en
+Hit http://archive.ubuntu.com trusty-backports/universe Translation-en
+Hit http://archive.ubuntu.com trusty Release
+Hit http://archive.ubuntu.com trusty/main Sources
+Hit http://archive.ubuntu.com trusty/restricted Sources
+Hit http://archive.ubuntu.com trusty/universe Sources
+Hit http://archive.ubuntu.com trusty/multiverse Sources
+Hit http://archive.ubuntu.com trusty/main amd64 Packages
+Hit http://archive.ubuntu.com trusty/restricted amd64 Packages
+Hit http://archive.ubuntu.com trusty/universe amd64 Packages
+Hit http://archive.ubuntu.com trusty/multiverse amd64 Packages
+Hit http://archive.ubuntu.com trusty/main Translation-en
+Hit http://archive.ubuntu.com trusty/multiverse Translation-en
+Hit http://archive.ubuntu.com trusty/restricted Translation-en
+Hit http://archive.ubuntu.com trusty/universe Translation-en
+Ign http://archive.ubuntu.com trusty/main Translation-en_US
+Ign http://archive.ubuntu.com trusty/multiverse Translation-en_US
+Ign http://archive.ubuntu.com trusty/restricted Translation-en_US
+Ign http://archive.ubuntu.com trusty/universe Translation-en_US
+Fetched 5,035 kB in 27s (181 kB/s)
+Reading package lists... Done
+Reading package lists... Done
+Building dependency tree
+Reading state information... Done
+The following NEW packages will be installed:
+  zabbix-agent
+0 upgraded, 1 newly installed, 0 to remove and 203 not upgraded.
+Need to get 160 kB of archives.
+After this operation, 770 kB of additional disk space will be used.
+Get:1 http://archive.ubuntu.com/ubuntu/ trusty/universe zabbix-agent amd64 1:2.2.2+dfsg-1ubuntu1                                                                         [160 kB]
+Fetched 160 kB in 1s (157 kB/s)
+Selecting previously unselected package zabbix-agent.
+(Reading database ... 66712 files and directories currently installed.)
+Preparing to unpack .../zabbix-agent_1%3a2.2.2+dfsg-1ubuntu1_amd64.deb ...
+Unpacking zabbix-agent (1:2.2.2+dfsg-1ubuntu1) ...
+Processing triggers for man-db (2.6.7.1-1ubuntu1) ...
+Processing triggers for ureadahead (0.100.0-16) ...
+Setting up zabbix-agent (1:2.2.2+dfsg-1ubuntu1) ...
+
+Creating config file /etc/zabbix/zabbix_agentd.conf with new version
+zabbix-agent start/running, process 9332
+Processing triggers for ureadahead (0.100.0-16) ...
+sed: can't read /etc/zzabbix_agentd.conf: No such file or directory
+zabbix-agent stop/waiting
+zabbix-agent start/running, process 9452
+root@mgmt:/home/vagrant# vim zabbixinstall.sh
+root@mgmt:/home/vagrant# ./zabbixinstall.sh
+Ign http://archive.ubuntu.com trusty InRelease
+Hit http://ppa.launchpad.net trusty InRelease
+Hit http://security.ubuntu.com trusty-security InRelease
+Hit http://archive.ubuntu.com trusty-updates InRelease
+Hit http://security.ubuntu.com trusty-security/main Sources
+Hit http://ppa.launchpad.net trusty/main amd64 Packages
+Hit http://archive.ubuntu.com trusty-backports InRelease
+Hit http://security.ubuntu.com trusty-security/universe Sources
+Hit http://ppa.launchpad.net trusty/main Translation-en
+Hit http://archive.ubuntu.com trusty Release.gpg
+Hit http://security.ubuntu.com trusty-security/main amd64 Packages
+Hit http://archive.ubuntu.com trusty-updates/main Sources
+Hit http://security.ubuntu.com trusty-security/universe amd64 Packages
+Hit http://archive.ubuntu.com trusty-updates/restricted Sources
+Hit http://security.ubuntu.com trusty-security/main Translation-en
+Hit http://archive.ubuntu.com trusty-updates/universe Sources
+Hit http://security.ubuntu.com trusty-security/universe Translation-en
+Hit http://archive.ubuntu.com trusty-updates/multiverse Sources
+Hit http://archive.ubuntu.com trusty-updates/main amd64 Packages
+Hit http://archive.ubuntu.com trusty-updates/restricted amd64 Packages
+Hit http://archive.ubuntu.com trusty-updates/universe amd64 Packages
+Hit http://archive.ubuntu.com trusty-updates/multiverse amd64 Packages
+Hit http://archive.ubuntu.com trusty-updates/main Translation-en
+Hit http://archive.ubuntu.com trusty-updates/multiverse Translation-en
+Hit http://archive.ubuntu.com trusty-updates/restricted Translation-en
+Hit http://archive.ubuntu.com trusty-updates/universe Translation-en
+Hit http://archive.ubuntu.com trusty-backports/main Sources
+Hit http://archive.ubuntu.com trusty-backports/restricted Sources
+Hit http://archive.ubuntu.com trusty-backports/universe Sources
+Hit http://archive.ubuntu.com trusty-backports/multiverse Sources
+Hit http://archive.ubuntu.com trusty-backports/main amd64 Packages
+Hit http://archive.ubuntu.com trusty-backports/restricted amd64 Packages
+Hit http://archive.ubuntu.com trusty-backports/universe amd64 Packages
+Hit http://archive.ubuntu.com trusty-backports/multiverse amd64 Packages
+Hit http://archive.ubuntu.com trusty-backports/main Translation-en
+Hit http://archive.ubuntu.com trusty-backports/multiverse Translation-en
+Hit http://archive.ubuntu.com trusty-backports/restricted Translation-en
+Hit http://archive.ubuntu.com trusty-backports/universe Translation-en
+Hit http://archive.ubuntu.com trusty Release
+Hit http://archive.ubuntu.com trusty/main Sources
+Hit http://archive.ubuntu.com trusty/restricted Sources
+Hit http://archive.ubuntu.com trusty/universe Sources
+Hit http://archive.ubuntu.com trusty/multiverse Sources
+Hit http://archive.ubuntu.com trusty/main amd64 Packages
+Hit http://archive.ubuntu.com trusty/restricted amd64 Packages
+Hit http://archive.ubuntu.com trusty/universe amd64 Packages
+Hit http://archive.ubuntu.com trusty/multiverse amd64 Packages
+Hit http://archive.ubuntu.com trusty/main Translation-en
+Hit http://archive.ubuntu.com trusty/multiverse Translation-en
+Hit http://archive.ubuntu.com trusty/restricted Translation-en
+Hit http://archive.ubuntu.com trusty/universe Translation-en
+Ign http://archive.ubuntu.com trusty/main Translation-en_US
+Ign http://archive.ubuntu.com trusty/multiverse Translation-en_US
+Ign http://archive.ubuntu.com trusty/restricted Translation-en_US
+Ign http://archive.ubuntu.com trusty/universe Translation-en_US
+Reading package lists... Done
+Reading package lists... Done
+Building dependency tree
+Reading state information... Done
+zabbix-agent is already the newest version.
+0 upgraded, 0 newly installed, 0 to remove and 203 not upgraded.
+sed: can't read /etc/zabbix_agentd.conf: No such file or directory
+zabbix-agent stop/waiting
+zabbix-agent start/running, process 9515
+root@mgmt:/home/vagrant# vim zabbixinstall.sh
+root@mgmt:/home/vagrant# ./zabbixinstall.sh
+Hit http://ppa.launchpad.net trusty InRelease
+Ign http://archive.ubuntu.com trusty InRelease
+Get:1 http://archive.ubuntu.com trusty-updates InRelease [65.9 kB]
+Hit http://security.ubuntu.com trusty-security InRelease
+Hit http://ppa.launchpad.net trusty/main amd64 Packages
+Hit http://archive.ubuntu.com trusty-backports InRelease
+Hit http://ppa.launchpad.net trusty/main Translation-en
+Hit http://archive.ubuntu.com trusty Release.gpg
+Hit http://security.ubuntu.com trusty-security/main Sources
+Get:2 http://archive.ubuntu.com trusty-updates/main Sources [422 kB]
+Hit http://security.ubuntu.com trusty-security/universe Sources
+Hit http://security.ubuntu.com trusty-security/main amd64 Packages
+Get:3 http://archive.ubuntu.com trusty-updates/restricted Sources [6,322 B]
+Get:4 http://archive.ubuntu.com trusty-updates/universe Sources [211 kB]
+Hit http://security.ubuntu.com trusty-security/universe amd64 Packages
+Get:5 http://archive.ubuntu.com trusty-updates/multiverse Sources [7,435 B]
+Get:6 http://archive.ubuntu.com trusty-updates/main amd64 Packages [1,104 kB]
+Hit http://security.ubuntu.com trusty-security/main Translation-en
+Hit http://security.ubuntu.com trusty-security/universe Translation-en
+Get:7 http://archive.ubuntu.com trusty-updates/restricted amd64 Packages [17.2 kB]
+Get:8 http://archive.ubuntu.com trusty-updates/universe amd64 Packages [484 kB]
+Get:9 http://archive.ubuntu.com trusty-updates/multiverse amd64 Packages [14.6 kB]
+Hit http://archive.ubuntu.com trusty-updates/main Translation-en
+Hit http://archive.ubuntu.com trusty-updates/multiverse Translation-en
+Hit http://archive.ubuntu.com trusty-updates/restricted Translation-en
+Hit http://archive.ubuntu.com trusty-updates/universe Translation-en
+Hit http://archive.ubuntu.com trusty-backports/main Sources
+Hit http://archive.ubuntu.com trusty-backports/restricted Sources
+Hit http://archive.ubuntu.com trusty-backports/universe Sources
+Hit http://archive.ubuntu.com trusty-backports/multiverse Sources
+Hit http://archive.ubuntu.com trusty-backports/main amd64 Packages
+Hit http://archive.ubuntu.com trusty-backports/restricted amd64 Packages
+Hit http://archive.ubuntu.com trusty-backports/universe amd64 Packages
+Hit http://archive.ubuntu.com trusty-backports/multiverse amd64 Packages
+Hit http://archive.ubuntu.com trusty-backports/main Translation-en
+Hit http://archive.ubuntu.com trusty-backports/multiverse Translation-en
+Hit http://archive.ubuntu.com trusty-backports/restricted Translation-en
+Hit http://archive.ubuntu.com trusty-backports/universe Translation-en
+Hit http://archive.ubuntu.com trusty Release
+Hit http://archive.ubuntu.com trusty/main Sources
+Hit http://archive.ubuntu.com trusty/restricted Sources
+Hit http://archive.ubuntu.com trusty/universe Sources
+Hit http://archive.ubuntu.com trusty/multiverse Sources
+Hit http://archive.ubuntu.com trusty/main amd64 Packages
+Hit http://archive.ubuntu.com trusty/restricted amd64 Packages
+Hit http://archive.ubuntu.com trusty/universe amd64 Packages
+Hit http://archive.ubuntu.com trusty/multiverse amd64 Packages
+Hit http://archive.ubuntu.com trusty/main Translation-en
+Hit http://archive.ubuntu.com trusty/multiverse Translation-en
+Hit http://archive.ubuntu.com trusty/restricted Translation-en
+Hit http://archive.ubuntu.com trusty/universe Translation-en
+Ign http://archive.ubuntu.com trusty/main Translation-en_US
+Ign http://archive.ubuntu.com trusty/multiverse Translation-en_US
+Ign http://archive.ubuntu.com trusty/restricted Translation-en_US
+Ign http://archive.ubuntu.com trusty/universe Translation-en_US
+Fetched 2,333 kB in 26s (89.5 kB/s)
+Reading package lists... Done
+Reading package lists... Done
+Building dependency tree
+Reading state information... Done
+zabbix-agent is already the newest version.
+0 upgraded, 0 newly installed, 0 to remove and 203 not upgraded.
+file changed
+file changed
+zabbix-agent stop/waiting
+zabbix-agent start/running, process 10986
+root@mgmt:/home/vagrant# awk '$1 == "Server=zabbix.opstree.com" {print $0}' /etc/zabbix//zabbix_agentd.conf
+Server=zabbix.opstree.com
+root@mgmt:/home/vagrant# awk '$1 == "Hostname=192.168.22.10-zabbixagent" {print $0}' /etc/zabbix/zabbix_agentd.conf
+Hostname=192.168.22.10-zabbixagent server
