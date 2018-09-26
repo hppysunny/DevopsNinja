@@ -1,0 +1,82 @@
+Setup LAMP server:
+1.	Install apache2
+root@mgmt:~# sudo apt-get update
+root@mgmt:~# apt-get install apache2
+configure apache2
+root@mgmt:~# vi /etc/apache2/apache2.conf
+root@mgmt:~#192.168.33.70
+root@mgmt:~# configtest
+root@mgmt:~# sudo apache2ctl configtest
+Syntax OK
+root@mgmt:~# sudo service apache2 restart
+ 
+Install mysql
+root@mgmt:~# apt-get install mysql-server
+asks for root-password
+ 
+root@mgmt:~# apt-get install php libapache2-mod-php php-mcrypt php- mysql
+To check whether mysql running or not
+root@mgmt:~# ps -ef|grep mysql
+root     19364 11156  0 03:16 pts/0    00:00:00 grep --color=auto mysql
+configure the file:
+root@mgmt:~#  vim /etc/apache2/mods-enabled/dir.conf
+&lt;IfModule mod_dir.c&gt;
+ DirectoryIndex index.html index.cgi index.pl index.php # index.xhtml index.htm
+&lt;/IfModule&gt;
+&lt;IfModule mod_dir.c&gt;
+DirectoryIndex index.php index.html index.cgi index.pl index.xhtml index.htm
+&lt;/IfModule&gt;
+root@mgmt:~#  service  apache2 restart
+configure the info.php file
+root@mgmt:~#  vim /var/www/html/info.php
+&lt;?php
+phpinfo();
+?&gt;
+
+Create database and Grant the local host
+mysql -u root -p
+mysql&gt; CREATE DATABASE wordpress DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;
+mysql&gt; GRANT ALL ON wordpress.* TO 'root'@'localhost' IDENTIFIED BY 'Arun@999';
+mysql&gt; FLUSH PRIVILEGES;
+mysql&gt; EXIT;
+
+Install Additional PHP Extensions
+root@mgmt:~# apt-get update
+root@mgmt:~#  apt-get install php-curl php-gd php-mbstring php-mcrypt php-xml php-xmlrpc
+root@mgmt:~# sudo service apache2 restart
+Adjust Apache's Configuration to Allow for .htaccess Overrides and Rewrites
+root@mgmt:~# sudo vim /etc/apache2/apache2.conf
+&lt;Directory /var/www/html/&gt;
+AllowOverride All
+&lt;/Directory&gt;
+Enable the Rewrite Module
+root@mgmt:~# sudo a2enmod rewrite
+Enable the Changes
+root@mgmt:~# sudo apache2ctl configtest
+root@mgmt:~# sudo service apache2 restart
+10.	Download WordPress
+$ cd /tmp; sudo wget -c http://wordpress.org/latest.tar.gz
+
+root@mgmt:~# tar xzvf latest.tar.gz
+root@mgmt:~#  touch /tmp/wordpress/.htaccess
+chmod 660 /tmp/wordpress/.htaccess
+root@mgmt:~# mv /tmp/wordpress/wp-config-sample.php /tmp/wordpress/wp-config.php
+root@mgmt:~# mkdir /tmp/wordpress/wp-content/upgrade
+move the WordPress files from the extracted folder to the Apache default root directory, /var/www/html/
+root@mgmt:~#  rsync -av wordpress/* /var/www/html/
+set the correct permissions on the website directory, i.e. give ownership of the WordPress files to the web server
+root@mgmt:~#  sudo chown -R www-data:www-data /var/www/html/
+root@mgmt:~# sudo chmod -R 755 /var/www/html/
+Setting up the WordPress Configuration File
+curl -s https://api.wordpress.org/secret-key/1.1/salt/
+paste the output in:-
+root@mgmt:~#  vim /var/www/html/wp-config.php
+Configure the changes
+root@mgmt:~#  vi /var/www/html/wp-config.php
+define('DB_NAME', 'wordpress');
+/** MySQL database username */
+define('DB_USER', 'localhost');
+/** MySQL database password */
+define('DB_PASSWORD', sanjay@768);
+ 
+
