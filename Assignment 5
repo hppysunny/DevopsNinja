@@ -1,0 +1,179 @@
+Check the Memory used by a process: $ free -h $ top (used to know the memory and also gives the cpu usage) $ htop $ vmstat (used to know the virtual memory used by a process)
+Top command also gives the load average details in three frequencies(1min, 5min and 15min) High load averages imply that a system is overloaded; many processes are waiting for CPU time. The load averages shown by these tools is read /proc/loadavg file $ cat /proc/loadavg
+Total number of open files by a process: lsof meaning ‘LiSt Open Files’ is used to find out which files are open by which process. One of the reason to use lsof command is when a disk cannot be unmounted as it says the files are being used. $ lsof FD: when we open a file, the operating system creates an entry to represent that file and store the information about that opened file. So if there are 100 files opened in your OS then there will be 100 entries in OS (somewhere in kernel). This entry number is the file descriptor. FD: column indicates file descriptor cwd current working directory rtd root directory lsof txt program text (code and data) mem memory-mapped file FD column numbers like 1u is actual file descriptor and followed by u,r,w of it’s mode as:
+1.	r for read access.
+2.	w for write access.
+3.	u for read and write access. TYPE – of files and it’s identification.
+4.	DIR – Directory
+5.	REG – Regular file
+6.	CHR – Character special file.
+7.	FIFO – First In First Out
+List User Specific Opened Files $ lsof -u username
+Find Out who’s Looking What Files and Commands $ lsof -i -u username
+Find Processes running on Specific Port $ lsof -i TCP:22 $ lsof -i TCP:22-1024
+Search by PID $ lsof -p 1
+List Only IPv4 files $ lsof -i 4
+Exclude User with ‘^’ Character $ lsof -i -u^ root
+Kill all Activity of Particular User $ kill -9 lsof -t -u tecmint
+Kill: kill command to terminates stalled or unwanted processes without having to log out or restart the server. The kill command sends the specified signal such as kill process to the specified process or process groups. If no signal is sent then SIGTRERM will taken (signal 15)
+List of common term signals: SIGHUP (1) – Hangup detected on controlling terminal or death of controlling process. Use SIGHUP to reload configuration files and open/close log files. SIGKILL (9) – Kill signal. Use SIGKILL as a last resort to kill process. This will not save data or cleaning kill the process. SIGTERM (15) – Termination signal. This is the default and safest way to kill process.
+$ kill PID $ kill -15 PID $ kill -9 PID $ kill PID1 PID2 $ killall -15
+Permissions to kill process user can kill his own process Only root user can kill system level process. Only root user can kill process started by other users.
+PID: A Linux or Unix process is running instance of a program. Each time you start any process, the system is automatically assigned a unique process identification number (PID).
+In Linux, an executable stored on disk is called a program, and a program loaded into memory and running is called a process. When a process is started, it is given a unique number called process ID (PID) that identifies that process to the system.
+$ pidof (pidof apache2)
+$ ps -ef $ ps -aux |grep apache2
+PPID: each process is assigned a parent process ID (PPID) that tells which process started it. The PPID is the PID of the process’s parent. Init is grandfather of all processors all processes running in linux can trace their relationship back to init
+Importance of PPID: Occasionally, processes go bad. You might try to quit a program only to find that it has other intentions. The process might continue to run or use up resources even though its interface closed. Sometimes, this leads to what is called a zombie process, a process that is still running, but dead. One effective way to kill a zombie process is to kill its parent process. Print PID of current shell $ echo $$ $ echo $BASHPID
+How to clear a log file of running process sudo cat /dev/null > /var/log/httpd/access_log What init process is responsible for? The program init is the process with process ID 1. It is responsible for initializing the system in the required way. init is centrally configured in the /etc/inittab file where the runlevels are defined. The file also specifies which services and daemons are available in each of the runlevels. Depending on the entries in /etc/inittab, several scripts are run by init called init scripts, all reside in the directory /etc/init.d. The entire process of starting the system and shutting it down is maintained by init. init is started directly by the kernel and resists signal 9, which normally kills processes. All other programs are either started directly by init or by one of its child processes.
+What are Running, Waiting, Stopped and Zombie processes? Running: running is the current process in the system or it’s ready to run (it’s waiting to be assigned to one of the CPUs). Waiting : In this state, a process is waiting for an event to occur or for a system resource. Additionally, the kernel also differentiates between two types of waiting processes; interruptible waiting processes – can be interrupted by signals and uninterruptible waiting processes – are waiting directly on hardware conditions and cannot be interrupted by any event/signal. Stopped: In this state, a process has been stopped, usually by receiving a signal. For instance, a process that is being debugged. Zombie : Here, a process is dead, it has been halted but it’s still has an entry in the process table.
+What are stdin, stdout, and stderr and how do we use them? Linux is built being able to run instructions from the command line using switches to create the output. The question of course is how do we make use of that? One of the ways to make use of this is by using the three special file descriptors - stdin, stdout and stderr. Standard input - this is the file handle that process reads to get information from user. Standard output - Process writes normal information to this file handle. Standard error - process writes error information to this file handle.
+What filter and nat table responsible for? Filter Table: It is default table for iptables. Iptables’s filter table has the following built-in chains. INPUT chain – Incoming to firewall. For packets coming to the local server. OUTPUT chain – Outgoing from firewall. For packets generated locally and going out of the local server. FORWARD chain – Packet for another NIC on the local server. For packets routed through the local server. NAT table: Iptable’s NAT table has the following built-in chains. PREROUTING chain – Alters packets before routing. i.e Packet translation happens immediately after the packet comes to the system (and before routing). This helps to translate the destination ip address of the packets to something that matches the routing on the local server. This is used for DNAT (destination NAT). POSTROUTING chain – Alters packets after routing. i.e Packet translation happens when the packets are leaving the system. This helps to translate the source ip address of the packets to something that might match the routing on the desintation server. This is used for SNAT (source NAT). OUTPUT chain – NAT for locally generated packets on the firewall.
+What is the difference between -I and -A while applying a rule in iptables? Insert one or more rules in the selected chain as the given rule number. So, if the rule number is 1, the rule or rules are inserted at the head of the chain. The -A option appends one or more rules to the end of the selected chain. When the source and/or destination names resolve to more than one address, a rule will be added for each possible address combination.
+How do you check all the running process in the system? $ top (by using top command we can check the running process in the system, CPU usage and also the load average.
+How do you check those process that are waiting for the resources?
+root@mgmt:~# ps -ef | grep wait
+root     19668 11156  0 04:48 pts/0    00:00:00 grep --color=auto wait
+What init process is responsible for?
+The program init is the process with process ID 1. It is responsible for initializing the system in the required way. init is started directly by the kernel and resists signal 9, which normally kills processes. All other programs are either started directly by init or by one of its child processes.
+init is centrally configured in the /etc/inittab file where the runlevels are defined). The file also specifies which services and daemons are available in each of the runlevels. Depending on the entries in /etc/inittab, several scripts are run by init. For reasons of clarity, these scripts, called init scripts, all reside in the directory /etc/init.d.
+The entire process of starting the system and shutting it down is maintained by init. From this point of view, the kernel can be considered a background process whose task is to maintain all other processes and adjust CPU time and hardware access according to requests from other programs.
+What are Running, Waiting, Stopped and Zombie processes?
+Running Process:- Running Processes are those process which utilizes CPU/Resources for their execution. It can be checked through various commands like, ps, top, atop,htop,pstree.
+Waiting process: A "ready" or "waiting" process has been loaded into main memory and is awaiting execution on a CPU.
+Stopped Process:- 
+The stopped process in Linux/Unix is a process/task which received suspend signal (SIGSTOP/SIGTSTP) which tells kernel to not perform any processing on it as it has been stopped, and it can only be resume its execution if it is sent the SIGCONT signal.
+Basically stopped process awaits a continuation signal from the kernel, similarly as suspended process awaits a wake-up condition from the kernel.
+Each process in Linux kernel is represented by a task_struct data structure and each taskvector consist array of pointers to every task_struct. which describes a process or task in the system (either it's unrunnable, runnable or stopped).
+Zombie Process:- 
+
+When a process dies on Linux, it isn’t all removed from memory immediately — its process descriptor stays in memory (the process descriptor only takes a tiny amount of memory). The process’s status becomes EXIT_ZOMBIE and the process’s parent is notified that its child process has died with the SIGCHLD signal. The parent process is then supposed to execute the wait() system call to read the dead process’s exit status and other information. This allows the parent process to get information from the dead process. After wait() is called, the zombie process is completely removed from memory.
+This normally happens very quickly, so you won’t see zombie processes accumulating on your system. However, if a parent process isn’t programmed properly and never calls wait(), its zombie children will stick around in memory until they’re cleaned up.
+
+How do you elevate the priority of a process?
+
+When talking about processes priority is all about managing processor time. The Processor or CPU is like a human juggling multiple tasks at the same time. 
+In Linux we can set guidelines for the CPU to follow when it is looking at all the tasks it has to do. These guidelines are called niceness or nice value. The Linux niceness scale goes from -20 to 19. The lower the number the more priority that task gets. If the niceness value is high number like 19 the task will be set to the lowest priority and the CPU will process it whenever it gets a chance. The default nice value is zero.
+By using this scale we can allocate our CPU resources more appropriately. Lower priority programs that are not important can be set to a higher nice value, while high priority programs like daemons and services can be set to receive more of the CPU’s focus. You can even give a specific user a lower nice value for all of his/her processes so you can limit their ability to slow down the computer’s core services.
+
+ps -o pid,comm,nice -p 594
+Setting priority on new processes
+At this point you are probably wondering how you can set your own priority levels on processes. To change the priority when issuing a new command you do nice -n [nice value] [command]:
+nice -n 10 apt-get upgrade
+
+Setting Priority on Existing Processes
+To change the priority of an existing process just do renice [nice value] -p [process id]:
+renice 10 -p 21827
+
+stdin, stdout, stderr
+Linux is built being able to run instructions from the command line using switches to create the output.
+The question of course is how do we make use of that?
+One of the ways to make use of this is by using the three special file descriptors - stdin, stdout and stderr.
+ 	Under normal circumstances every Linux program has three streams opened when it starts; one for input; one for output; and one for printing diagnostic or error messages. These are typically attached to the user's terminal (see man tty(4)) but might instead refer to files or other devices, depending on what the parent process chose to set up.	 
+	 
+Table 1.2. Standard Input, Standard Output and Standard Error
+Type	Symbol
+standard input	0<
+standard output	1>
+standard error	2>
+stdin
+Generally standard input, referred to as "stdin", comes from the keyboard.
+When you type stuff, you're typing it on stdin (a standard input terminal). A standard input device, which is usually the keyboard, but Linux also allows you take standard input from a file.
+For example:
+cat < myfirstscript 
+                
+This would tell cat to take input from the file myfirstscript instead of from the keyboard (This is of course the same as: cat myfirstscript).
+Essentially what this boils down to is that the input for this command (cat) is no longer coming from where it was expecting to come from (the keyboard), but is now coming from a file.
+Linux associates the file descriptor 0 with standard input. So, we could have said:
+cat 0< myfirstscript
+                
+which would have produced the same as the previous command.
+Why could we leave out the 0?
+Since, at the time of creating a process, one standard input is associated with the process.
+stdout
+Standard output, as created at process creating time, goes to the console, your terminal or an X terminal. Exactly where output is sent clearly depends on where the process originated.
+Our console or terminal should be the device that is accepting the output. Running the command:
+cat file
+                
+would [con]catenate the file, by default, to our standard output i.e. our console or terminal screen. (Where the process originated.)
+We can change this and redirect the output to a file.
+Try the following:
+ls -al myfirstscript > longlisting
+                
+This redirects the output not to the screen, but rather to a new file 'longlisting'. The process of redirection using the '>' will create the file 'longlisting' if it was not there. Alternately, if the file 'longlisting' existed, it would remove it, (removing the contents too of course) and put a new file there with the directory listing of "myfirstscript" within it.
+How would we see the contents of the file?
+cat longlisting
+                
+This will show the size, the owner, the group and the name of the file myfirstscript inside the file 'longlisting'.
+In this example, the output of the ls command has not gone to the standard output (the screen by default), but rather into a file called 'longlisting'.
+Linux has got a file descriptor for standard output, which is 1 (similar to the 0 for standard input file descriptor).
+The above ls -la example can be rewritten as:
+ls -al myfirstscript 1> longlisting
+                
+which, would do the same thing as leaving out the file descriptor identifier and just using the greater than sign.
+In the same way we use our standard input as < (or a 0<), we use a > (or a 1> ) to mean standard output.
+Returning to the cat example above, we could type data on the command line that gets sent directly to a file. If the file is not there it will create it and will insert the content we typed on the command line, into the file. This is illustrated below:
+$ cat > test
+This is the first line.
+This is the second line.
+This is the final line. < Ctrl-d pressed here >
+$ cat test
+This is the first line.
+This is the second line.
+This is the final line.
+                
+Doing this does not return us to a prompt. Why? What is it waiting for?
+It's waiting for us to actually enter our string into a buffer. You should start typing a sentence then another sentence, and another, etc. Each time you type a character, it's getting appended to the file 'newfile'.
+When you have finished typing in what you want, press Ctrl-d. The Ctrl-d (^D) character will send an end of file signal to cat thereby returning you to your prompt.
+If you list your directory contents using:
+ls -al 
+                
+you should see the file 'newfile'. This file is the one that you've just created on the command line.
+cat newfile
+                
+will show you the contents of 'newfile' displayed onto the standard output.
+Now why did all of this work? It worked because cat was taking its input from standard input and was putting its output not to standard out as normal, but was rather redirecting output to the file 'newfile'.
+On typing the command and hitting enter, you are not returned to your prompt since the console is expecting input to come from stdin; you type line after line of standard input followed by ^D. The ^D stopped the input, by sending an end-of-file character to the file, hence the file 'newfile' is created.
+Question: What do you think tac > newFile will do?
+How many tables are there in iptables. What filter and nat table responsible for?
+Sol:-  There are 4 types of tables in iptables, named below:- 
+A:- Filter table: Filter is default table for iptables. So, if you don’t define you own table, you’ll be using filter table. Iptables’s filter table has the following built-in chains.
+•	INPUT chain – Incoming to firewall. For packets coming to the local server.
+•	OUTPUT chain – Outgoing from firewall. For packets generated locally and going out of the local server.
+•	FORWARD chain – Packet for another NIC on the local server. For packets routed through the local server.
+
+B:- NAT Table: Iptable’s NAT table has the following built-in chains.
+•	PREROUTING chain – Alters packets before routing. i.e Packet translation happens immediately after the packet comes to the system (and before routing). This helps to translate the destination ip address of the packets to something that matches the routing on the local server. This is used for DNAT (destination NAT).
+•	POSTROUTING chain – Alters packets after routing. i.e Packet translation happens when the packets are leaving the system. This helps to translate the source ip address of the packets to something that might match the routing on the desintation server. This is used for SNAT (source NAT).
+•	OUTPUT chain – NAT for locally generated packets on the firewall.
+
+C:- Mangle Table: The mangle table is used to alter the IP headers of the packet in various ways. For instance, you can adjust the TTL (Time to Live) value of a packet, either lengthening or shortening the number of valid network hops the packet can sustain. Other IP headers can be altered in similar ways.
+This table can also place an internal kernel "mark" on the packet for further processing in other tables and by other networking tools. This mark does not touch the actual packet, but adds the mark to the kernel's representation of the packet.
+
+D:- Raw Table: This table is used mainly for configuring exemptions from connection
+     tracking in combination with the NOTRACK target. It registers at the
+     netfilter hooks with higher priority and is thus called before
+     ip_conntrack, or any other IP tables.
+
+What is DNAT and SNAT, Explain both with an example?
+ 
+ 
+Network Address Translation (NAT) occurs when one of the IP addresses in an IP packet header is changed. In a SNAT, the destination IP address is maintained and the source IP address is changed. Most commonly, a SNAT allows a host on the “inside” of the NAT, in an RFC 1918 IP address space, to initiate a connection to a host on the “outside” of the NAT. A DNAT, by way of contrast, occurs when the destination address is changed and the source IP address is maintained. A DNAT allows a host on the “outside” to connect to a host on the “inside”. In both cases, the NAT has to maintain a connection table which tells the NAT where to route returning packets. An important difference between a SNAT and a DNAT is that a SNAT allows multiple hosts on the “inside” to get to any host on the “outside”. By way of contrast, a DNAT allows any host on the “outside” to get to a single host on the “inside”.
+
+Use-Case for Source NAT: A local client behind Firewall or NAT device wanted to browse Internet
+Local Client IP: 10.10.10.10/24
+Website URL to visit: http://www.quora.com
+IP Address of Quora: 54.84.216.68
+Now when you type the URL in browser, your browser will establish a connection like this
+Source Address: 10.10.10.10
+Destination Address: 54.84.216.68
+Now, when you send a TCP syn, destination has to send ack. Now, ACK will have a 
+source address: 54.84.216.68
+Destination: 10.10.10.10
+Now, as 10.10.10.10 is not globally unique, it may so happen that Quora may be using 10.10.10.10 in some local systems, so packets instead of going to you will reach their local system and you will not be able to establish connection.
+So, what you do now is translate your source IP (10.10.10.10) to something which is globally routable (for example : 14.10.10.10).
+Now, you will have source address as 14.10.10.10, your NAT device will need to maintain NAT Table.
+Use case Destination NAT (DNAT)
+Now imagine a scenario, you are hosting a website and your website local address is 172.19.18.10 (private IP), now people cannot connect to your website from internet because your IP is private and not-globally reachable.
+So what you do now is to create a destination NAT entry where public IP is mapped to private IP.
+You will have one public for example: 14.10.10.20 and you NAT it to 172.19.18.10 (Your local IP) so any request meant for 14.10.10.20 is actually translated to 172.19.18.10 by your NAT device.
