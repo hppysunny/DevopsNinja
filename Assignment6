@@ -1,0 +1,21 @@
+ 
+
+Fork Bomb
+:(){ :|: & };:
+
+Fork Bomb creates a function that calls itself twice every call and doesn’t have any way to terminate itself. It keeps doubling up until the system runs out of resources and eventually the system hangs and a reboot is required to bring it back to normal state
+
+Explanation of fork bomb script: 
+1.	:() means you are defining a function called :
+2.	{:|: &} means run the function : and send its output to the : function again and run that in the background.
+o	: – load another copy of the ‘:’ function into memory
+o	| – and pipe its output to
+o	: – another copy of ‘:’ function, which has to be loaded into memory
+o	Therefore, ‘:|:’ simply gets two copies of ‘:’ loaded whenever ‘:’ is called
+o	& – disown the functions, if the first ‘:’ is killed, all of the functions that it has started should NOT be auto-killed
+o	} – end of what to do when we say ‘:’
+3.	; Command Separator
+4.	: runs the function first time
+
+This can be prevented by by using ulimit to limit the number of processes-per-user.
+
